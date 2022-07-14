@@ -2,9 +2,7 @@
 #define __USERMANAGER_H__
 
 
-#include "../../../GenStructures/HashMap/HashMap.h"
-#include<stdlib.h>
-#include<stdio.h>
+#include "HashMapAPI.h"
 
 typedef struct UserManager UserManager;
 
@@ -29,7 +27,7 @@ typedef enum UserManagerStatus{
  */
 
 
-UserManager* CreateUserManager(char* fileUsersName);/* file */
+UserManager* CreateUserManager();/* file */
 
 /** 
  * @brief Free a memory that alloceted to UserManager struct
