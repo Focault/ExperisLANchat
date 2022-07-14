@@ -1,8 +1,11 @@
 #ifndef __ECHATLIMITS_H__
 #define __ECHATLIMITS_H__
 
+typedef unsigned char switch_t;
+
 #define TRUE 1
 #define FALSE 0
+#define PTR_NULL -1
 
 #define MAX_NAME_LEN 32
 #define MIN_NAME_LEN

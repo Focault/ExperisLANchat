@@ -28,7 +28,7 @@ typedef enum Map_Result {
 
 /* function that returns the index of the element from its key */
 typedef size_t (*HashFunction)(const void* _key);
-/* if the data is equal returns TRUE, if not returns FALSE */
+/* if the data is equal returns TRUE[1], if not returns FALSE[0] */
 typedef int (*EqualityFunction)(const void* _firstKey, const void* _secondKey);
 /* if returns 0 ForEach will stop the iteration */
 typedef int	(*KeyValueActionFunction)(const void* _key, void* _value, void* _context);

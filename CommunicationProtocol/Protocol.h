@@ -3,7 +3,6 @@
 #include <stddef.h> /* size_t */
 #include "EchatLimits.h"
 
-typedef unsigned char switch_t;
 typedef unsigned char reply_t;
 
 typedef enum PackResult

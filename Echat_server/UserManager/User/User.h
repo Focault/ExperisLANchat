@@ -3,115 +3,104 @@
 
 #include "GenListAPI.h"
 
-
-typedef enum UserResult 
+typedef enum UserResult
 {
-USER_SUCCESS,
-USER_UNINITIALIZED_ERROR,
-USER_INVALID_DATA_ERROR
-
-}UserResult;
+    USER_SUCCESS,
+    USER_UNINITIALIZED_ERROR,
+    USER_INVALID_DATA_ERROR,
+    USER_ALREADY_ACTIVE,
+    USER_ALLOCATION_FAILED
+} UserResult;
 
 typedef struct User User;
 
-/** 
+/**
  * @brief Create a new User with given name and password characteristics.
- * @param[in] _userName
- * 						  
- * @param[in]  password 
- *  
- * @return newly created user or null on failure
- */
-
-User* CreateUser(char* _userName, char* _password);
-
-/** 
- * @brief put user's flag login  in LOGIN 
- * @param[in] pointer to user struct
- * 						  
  * 
- * @return status  
+ * @param _userName - username
+ * @param _password - password
+ * @return User* 
+ * @warning returns NULL if one of the pointers are NULL or if failed allocation
  */
+User *CreateUser(const char *_userName, const char *_password);
 
-
-
+/**
+ * @brief marks user as LOGIN
+ * 
+ * @param _user pointer to user struct
+ * @return UserResult 
+ * @retval USER_SUCCESS
+ * @retval USER_UNINITIALIZED_ERROR - pointer is NULL
+ * @retval USER_ALREADY_ACTIVE - if user is already connected
+ */
 UserResult UserLogin(User *_user);
 
-
-/** 
+/**
  * @brief return list of names of groups that a user are in
  * @param[in] pointer to user struct
- * 						  
- * 
- * @return NULL if pointer to user is NULL, pointer to list groups  
+ *
+ *
+ * @return NULL if pointer to user is NULL, pointer to list groups
  */
-List* UserGetGroups(User *_user);
+List *UserGetGroups(User *_user);
 
-/** 
- * @brief add to user's list group name of group
- * @param[in] pointer to user struct
- * @param[in]name of group 
+/**
+ * @brief mark user as connected to group
  * 
- * @return Status  
+ * @param _user pointer to user struct
+ * @param _groupName name of group
+ * @return UserResult 
+ * @retval USER_SUCCESS
+ * @retval USER_UNINITIALIZED_ERROR - one of the pointers is NULL
+ * @retval USER_ALLOCATION_FAILED - if failed to mark
  */
-
-
-
 UserResult UserAddGroup(User *_user, char *_groupName);
 
-
-/** 
- * @brief remove from user's list group name of group
- * @param[in] pointer to user struct
- * @param[in]name of group  
+/**
+ * @brief mark that user had left a group
  * 
- * @return Status  
+ * @param _user pointer to user struct
+ * @param _groupName name of group
+ * @return UserResult 
+ * @retval USER_SUCCESS
+ * @retval USER_UNINITIALIZED_ERROR - one of the pointers is NULL
  */
-
-
-
 UserResult UserLeaveGroup(User *_user, char *_groupName);
 
-/** 
- * @brief free a memory that was allocated to user struct
- * @param[in] pointer to user struct
- *   
+/**
+ * @brief Destroy user struct
  * 
- * @return none  
+ * @param _user pointer to user struct
  */
+void DestroyUser(void *_user);
 
-
-void DestroyUser(void* _user);
-
-/** 
- * @brief return name of user 
- * @param[in] pointer to user struct
- *   
- * @return NULL if pointer to user is NULL
- * @return userName   
+/**
+ * @brief Get the User Name
+ * 
+ * @param _user pointer to user struct
+ * @return char* 
+ * @warning NULL if pointer to user is NULL
  */
+char *GetUserName(User *_user);
 
-
-char* GetUserName(User* _user);
-
-/** 
- * @brief return user's password  
- * @param[in] pointer to user struct
- *   
- * @return NULL if pointer to user is NULL
- * @return userName   
+/**
+ * @brief Get the User Password
+ * 
+ * @param _user - pointer to user struct
+ * @return char*
+ * @warning NULL if pointer to user is NULL
  */
-char* GetUserPass(User* _user);
-/** 
- * @brief check if user logged on  
- * @param[in] pointer to user struct
- *   
- * @return -1 if pointer to user is NULL
- * @return 1 if   user logged on 
- * @return 1 if   user aren't logg on 
+char *GetUserPass(User *_user);
+
+/**
+ * @brief checks if user is logged in
+ * 
+ * @param _user pointer to user struct
+ * @return int 
+ * @retval PTR_NULL[-1] - if pointer to user is NULL
+ * @retval TRUE[1] - if user is logged in
+ * @retval FALSE[0] - if user is disconnected
  */
-
-int IsLoggedInUser(User* _user);
-
+int IsLoggedInUser(User *_user);
 
 #endif /*__USER_H__*/

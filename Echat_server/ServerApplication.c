@@ -102,7 +102,7 @@ static void RegistrationRequestAndReply(Server *_server, int _clientID, ServerAp
     char buffer[MAX_MESSAGE_LEN];
     UserManagerStatus status;
     status = UserRegister(_context->m_userManager, _protocol->m_name, _protocol->m_password);
-    if (status == USER_MANAGER_REGISTRATION_FAILED || status == USER_DUPLICATE)
+    if (status == USER_ILLEGAL_INPUT || status == USER_DUPLICATE)
     {
         _protocol->m_reply = REG_FAIL_USR_EXIST;
     } else {
@@ -119,7 +119,7 @@ static void LoginRequestAndReply(Server *_server, int _clientID, ServerApp *_con
     char buffer[MAX_MESSAGE_LEN];
     UserManagerStatus status;
     status = UserLogIn(_context->m_userManager, _protocol->m_name, _protocol->m_password);
-    if (status == USER_MANAGER_REGISTRATION_FAILED || status == USER_DUPLICATE)
+    if (status == USER_WRONG_INPUT || status == USER_DUPLICATE)
     {
         _protocol->m_reply = REG_FAIL_USR_EXIST;
     } else {
