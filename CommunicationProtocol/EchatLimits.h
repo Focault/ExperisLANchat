@@ -8,9 +8,9 @@ typedef unsigned char switch_t;
 #define PTR_NULL -1
 
 #define MAX_NAME_LEN 32
-#define MIN_NAME_LEN
+#define MIN_NAME_LEN 8
 #define MAX_PASSWORD_LEN 32
-#define MIN_PASSWORD_LEN
+#define MIN_PASSWORD_LEN 8
 #define MAX_GROUP_NAME_LEN 222
 #define MIN_GROUP_NAME_LEN
 #define MAX_IP_LEN 16
