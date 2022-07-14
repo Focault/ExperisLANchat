@@ -4,3 +4,7 @@ GitHubToken.txt
 .vscode/settings.json
 .vscode/dryrun.log
 .vscode/targets.log
+CommunicationProtocol/ProtocolTests/ProtocolTests.out
+CommunicationProtocol/ProtocolTests/ProtocolTests.o
+CommunicationProtocol/ProtocolTests/Protocol.o
+.vscode/c_cpp_properties.json

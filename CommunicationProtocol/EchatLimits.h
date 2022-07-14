@@ -11,8 +11,9 @@
 #define MAX_GROUP_NAME_LEN 222
 #define MIN_GROUP_NAME_LEN
 #define MAX_IP_LEN 16
-#define MAX_MESSAGE_LEN 258
+#define MAX_MESSAGE_LEN 259
 
 #define MAX_GROUP_NUM 256
+#define MAX_MEMBERS_IN_GROUP 1000
 
 #endif /* __ECHATLIMITS_H__ */
