@@ -16,6 +16,9 @@ struct User
 	size_t m_magicNum;
 };
 
+static int NameGroupEquals(void *_element, void *_context);
+static ListItr IsGroupExistInList(List *_list, char *_groupName);
+
 User *CreateUser(const char *_userName, const char *_password)
 {
 	User *user = NULL;
@@ -88,46 +91,21 @@ UserResult UserAddGroup(User *_user, char *_groupName)
 		return USER_UNINITIALIZED_ERROR;
 	}
 
-	if ((groupName = (char *)malloc(strlen(_groupName) * sizeof(char))) == NULL)
+	if (IsGroupExistInList(_user->m_groups, _groupName) == NULL)
 	{
-		return USER_UNINITIALIZED_ERROR;
+		if ((groupName = (char*)malloc(strlen(_groupName) * sizeof(char))) == NULL ||
+			ListPushHead(_user->m_groups, groupName) != LIST_SUCCESS)
+		{
+			return USER_ALLOCATION_FAILED;
+		}
+
+		strcpy(groupName, _groupName);
 	}
-
-	strcpy(groupName, _groupName);
-
-	ListPushHead(_user->m_groups, groupName);
-
 	return USER_SUCCESS;
-}
-
-int NameGroupEquals(void *_element, void *_context)
-{
-	char *nameGroup1;
-	char *nameGroup2;
-	int i = 0;
-
-	nameGroup1 = (char *)_element;
-	nameGroup2 = (char *)_context;
-
-	while (*(nameGroup1 + i) != '\0' || *(nameGroup2 + i) != '\0')
-	{
-		if (*(nameGroup1 + i) != *(nameGroup2 + i))
-			return 0;
-		i++;
-	}
-
-	if ((*(nameGroup1 + i) == '\0' && *(nameGroup2 + i) != '\0') || (*(nameGroup2 + i) == '\0' && *(nameGroup1 + i) != '\0'))
-	{
-		return 0;
-	}
-
-	return 1;
 }
 
 UserResult UserLeaveGroup(User *_user, char *_groupName)
 {
-	ListItr begin;
-	ListItr end;
 	ListItr iter;
 
 	if (_user == NULL || _groupName == NULL)
@@ -135,18 +113,10 @@ UserResult UserLeaveGroup(User *_user, char *_groupName)
 		return USER_UNINITIALIZED_ERROR;
 	}
 
-	begin = ListItrBegin(_user->m_groups);
-	end = ListItrEnd(_user->m_groups);
-
-	iter = ListItrFindFirst(begin, end, NameGroupEquals, _groupName);
-
-	if (iter == end)
+	if ((iter = IsGroupExistInList(_user->m_groups, _groupName)) != NULL)
 	{
-		return USER_INVALID_DATA_ERROR;
+		ListItrRemove(iter);
 	}
-
-	ListItrRemove(iter);
-
 	return USER_SUCCESS;
 }
 
@@ -156,7 +126,6 @@ char *GetUserPass(User *_user)
 	{
 		return NULL;
 	}
-
 	return _user->m_password;
 }
 
@@ -166,28 +135,28 @@ char *GetUserName(User *_user)
 	{
 		return NULL;
 	}
-
 	return _user->m_userName;
 }
 
-/*int main()
+/* Static Functions */
+
+static int NameGroupEquals(void *_groupName1, void *_groupName2)
 {
-User* user;
-ListItr begin;
+	return !strcmp((char*)_groupName1, (char*)_groupName2);
+}
 
-List* groups;
-user = CreateUser("Name", "Pass");
-printf("%s\n", GetUserName(user));
-groups = UserGetGroups(user);
-UserAddGroup(user, "Group");
-begin = ListItrBegin(groups);
-printf("%d\n", NameGroupEquals(ListItrGet(begin), "Group"));
-UserAddGroup(user, "Group");
+static ListItr IsGroupExistInList(List *_list, char *_groupName)
+{
+	ListItr begin, end, iter;
 
+	begin = ListItrBegin(_list);
+	end = ListItrEnd(_list);
 
+	iter = ListItrFindFirst(begin, end, NameGroupEquals, _groupName);
 
-printf("%s\n", (char*)ListItrGet(begin));
-
-
-DestroyUser(user);
-}*/
+	if (!ListItrEquals(iter, end))
+	{
+		return iter;
+	}
+	return NULL;
+}

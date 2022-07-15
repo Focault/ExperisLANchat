@@ -61,6 +61,7 @@ void DestroyServerApp(ServerApp **_serverApp)
         DestroyServer((*_serverApp)->m_server);
         DestroyUserManager(&((*_serverApp)->m_userManager));
         free(*_serverApp);
+        *_serverApp = NULL;
     }
 }
 
@@ -74,7 +75,7 @@ static int GetMessageAndProccess(Server *_server, int _clientID, void *_message,
             RegistrationRequestAndReply(_server, _clientID, (ServerApp*)_context, &messageProtocol);
             break;
         case LOGIN_REQUEST:
-            /* char* Username, char* Password */
+            LoginRequestAndReply(_server, _clientID, (ServerApp*)_context, &messageProtocol);
             break;
         case LOGOUT_NOTIFY:
             /* Username */
@@ -102,14 +103,14 @@ static void RegistrationRequestAndReply(Server *_server, int _clientID, ServerAp
     char buffer[MAX_MESSAGE_LEN];
     UserManagerStatus status;
     status = UserRegister(_context->m_userManager, _protocol->m_name, _protocol->m_password);
-    if (status == USER_ILLEGAL_INPUT || status == USER_DUPLICATE)
+    if (status == USER_ILLEGAL_INPUT || status == USER_DUPLICATE || status == USER_MANGER_ALLOCATION_FAIL)
     {
         _protocol->m_reply = REG_FAIL_USR_EXIST;
     } else {
         _protocol->m_reply = SUCCESS;
     }
     _protocol->m_protocolType = REGISTRATION_REPLY;
-    Pack((void*)buffer, &_protocol, &packageLength);
+    Pack((void*)buffer, _protocol, &packageLength);
     SendMessage(_server, _clientID, (void*)buffer, packageLength);
 }
 
@@ -119,13 +120,20 @@ static void LoginRequestAndReply(Server *_server, int _clientID, ServerApp *_con
     char buffer[MAX_MESSAGE_LEN];
     UserManagerStatus status;
     status = UserLogIn(_context->m_userManager, _protocol->m_name, _protocol->m_password);
-    if (status == USER_WRONG_INPUT || status == USER_DUPLICATE)
+    switch (status)
     {
-        _protocol->m_reply = REG_FAIL_USR_EXIST;
-    } else {
+    case USER_MANAGER_SUCCESS:
         _protocol->m_reply = SUCCESS;
+        break;
+    case USER_MANAGER_ALREADY_ACTIVE:
+        _protocol->m_reply = LOGIN_FAIL_ALREADY_ACTIVE;
+        break;
+    case USER_WRONG_INPUT:
+    default:
+        _protocol->m_reply = LOGIN_FAIL_WRONG_INPUT;
+        break;
     }
     _protocol->m_protocolType = LOGIN_REPLY;
-    Pack((void*)buffer, &_protocol, &packageLength);
+    Pack((void*)buffer, _protocol, &packageLength);
     SendMessage(_server, _clientID, (void*)buffer, packageLength);
 }

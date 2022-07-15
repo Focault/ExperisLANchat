@@ -1,9 +1,11 @@
+#include <unistd.h> /* close */
 #include <stdio.h>
 #include <stdlib.h> /*malloc, free*/
 #include <string.h> /*memset, strlen*/
 #include <sys/socket.h> /*socket*/
 #include <sys/select.h> /*select*/
 #include <netinet/in.h> /*struct sockaddr_in*/
+#include <arpa/inet.h> /* inet_addr, htons */
 #include "ClientNet.h"
 #include "EchatLimits.h"
 

@@ -8,7 +8,7 @@ int main(int argc, char const *argv[])
 
     client_ptr = CreateClient();
     RunClient(client_ptr);
-    DestroyClient(client_ptr);
+    DestroyClient(&client_ptr);
 
     return 0;
 }

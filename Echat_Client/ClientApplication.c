@@ -85,7 +85,6 @@ static ClientResult CheckClientDetails(Client* _client, ProtocolType _packProtoc
 {
     Protocol ptcl;
     char packedMSG[MAX_MESSAGE_LEN];
-    ClientResult errcode;
     size_t messageLen;
     
     GetUserDetails(ptcl.m_name, ptcl.m_password);

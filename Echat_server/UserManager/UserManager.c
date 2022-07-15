@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "HashMapAPI.h"
 #include "User.h"
 #include "UserManager.h"
 #include "EchatLimits.h"
@@ -16,6 +17,7 @@ static int IsKeysEquals(const void *_key1, const void *_key2);
 static size_t HashFunc(const void *_key);
 static void DestroyUserName(void* _username);
 static UserManager *CalibrateHashMap(UserManager *_userManager);
+static void RemoveNewLine(char *_str);
 
 UserManager *CreateUserManager()
 {
@@ -79,6 +81,35 @@ UserManagerStatus UserRegister(UserManager *_userManager, char *_userName, char 
 	return USER_MANAGER_SUCCESS;
 }
 
+void DestroyUserManager(UserManager **_userManager)
+{
+	if (_userManager != NULL && *_userManager != NULL)
+	{
+		HashMap_Destroy(&(*_userManager)->m_users, DestroyUserName, DestroyUser);
+		free(*_userManager);
+		*_userManager = NULL;
+	}
+}
+
+UserManagerStatus UserLogIn(UserManager *_userManager, char *_userName, char *_pass)
+{
+	User *user;
+	if (_userManager == NULL || _userName == NULL || _pass == NULL)
+	{
+		return USER_MANAGER_UNINITIALIZED;
+	}
+	if (HashMap_Find(_userManager->m_users, _userName, (void**)&user) != MAP_SUCCESS ||
+		strcmp(GetUserPass(user), _pass))
+	{
+		return USER_WRONG_INPUT;
+	}
+	if (UserLogin(user) == USER_ALREADY_ACTIVE)
+	{
+		return USER_MANAGER_ALREADY_ACTIVE;
+	}
+	return USER_MANAGER_SUCCESS;
+}
+
 /* Static Functions */
 
 static size_t HashFunc(const void *_key)
@@ -113,7 +144,7 @@ static UserManager *CalibrateHashMap(UserManager *_userManager)
 	char *userName;
 	char pass[20];
 	
-	if ((fp = fopen(USER_DATA_BASE, "a+")) != NULL)
+	if ((fp = fopen(USER_DATA_BASE, "r")) != NULL)
 	{
 	    while (!feof(fp))
 	    {	
@@ -123,9 +154,11 @@ static UserManager *CalibrateHashMap(UserManager *_userManager)
 				free(_userManager);
 				return NULL;
 			}
-			if ((fgets(userName, MAX_NAME_LEN, fp)) != NULL)
+			if ((fgets(userName, MAX_NAME_LEN, fp)) != NULL &&
+				fgets(pass, MAX_PASSWORD_LEN, fp) != NULL)
 			{
-				fgets(pass, MAX_PASSWORD_LEN, fp);
+				RemoveNewLine(userName);
+				RemoveNewLine(pass);
 				user = CreateUser(userName, pass);
 				HashMap_Insert(_userManager->m_users, (void*)userName, (void*)user);
 			}
@@ -135,3 +168,11 @@ static UserManager *CalibrateHashMap(UserManager *_userManager)
 	return _userManager;
 }
 
+static void RemoveNewLine(char *_str)
+{
+	int len = strlen(_str);
+	if (_str[len - 1] == '\n')
+	{
+		_str[len - 1] = '\0';
+	}
+}
