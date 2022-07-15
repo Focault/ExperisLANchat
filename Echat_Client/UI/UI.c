@@ -8,7 +8,7 @@ MenuOptions WelcomeMenu()
 {
     int option;
     
-    printf("Welcome to eChat!");
+    printf("Welcome to eChat!\n");
     printf("What would like to do?\n1. Register.\n2. Login.\n3. Exit.\n");
     scanf("%d", &option);
 
@@ -24,7 +24,8 @@ MenuOptions WelcomeMenu()
             return EXIT;
         
         default:
-            return ILLEGAL_OPTION; /* change it to try again */
+            printf("Illegal option! Try again.\n");
+            return WelcomeMenu();
     }
 }
 
