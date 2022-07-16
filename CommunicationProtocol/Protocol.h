@@ -40,14 +40,14 @@ typedef enum ProtocolType
     LOGOUT_NOTIFY,        /* char* Username */
     /* Group Protocols */
     GROUP_JOIN_REQUEST,   /* char* Username, char* GroupName */
-    GROUP_JOIN_REPLY,     /* Reply, char* GroupName, char* udpIP */
+    GROUP_JOIN_REPLY,     /* Reply, char* GroupName, char* udpIP, int port */
     GROUP_LEAVE,          /* char* Username, char* GroupName */
     GROUP_LIST_REQUEST,   /*  */
     GROUP_LIST_REPLY,     /* unsigned char numOfGroupsLeft, char* GroupName, unsigned int usersInGroup */
     GROUP_LIST_RECIEVED,  /* Reply */
     /* Create Group Protocols */
     CREATE_GROUP_REQUEST, /* char* Username, char* GroupName */
-    CREATE_GROUP_REPLY    /* Reply, char* GroupName, char* udpIP */
+    CREATE_GROUP_REPLY    /* Reply, char* GroupName, char* udpIP, int port */
 } ProtocolType;
 
 typedef struct Protocol
@@ -58,6 +58,7 @@ typedef struct Protocol
     char m_password[MAX_PASSWORD_LEN];
     char m_groupName[MAX_GROUP_NAME_LEN];
     char m_udpIP[MAX_IP_LEN];
+    unsigned int m_port;
     unsigned int m_usersInGroup;
     unsigned char m_numOfGroupsLeft;
     unsigned char m_offset;
