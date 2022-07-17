@@ -1,6 +1,7 @@
 #ifndef __PROTOCOL_H__
 #define __PROTOCOL_H__
 #include <stddef.h> /* size_t */
+#include <arpa/inet.h> /* uint32_t, uint16_t */
 #include "EchatLimits.h"
 
 typedef unsigned char reply_t;
@@ -40,14 +41,14 @@ typedef enum ProtocolType
     LOGOUT_NOTIFY,        /* char* Username */
     /* Group Protocols */
     GROUP_JOIN_REQUEST,   /* char* Username, char* GroupName */
-    GROUP_JOIN_REPLY,     /* Reply, char* GroupName, char* udpIP, int port */
+    GROUP_JOIN_REPLY,     /* Reply, char* GroupName, char* udpIP, uint32_t port */
     GROUP_LEAVE,          /* char* Username, char* GroupName */
     GROUP_LIST_REQUEST,   /*  */
-    GROUP_LIST_REPLY,     /* unsigned char numOfGroupsLeft, char* GroupName, unsigned int usersInGroup */
+    GROUP_LIST_REPLY,     /* unsigned char numOfGroupsLeft, char* GroupName, uint16_t usersInGroup */
     GROUP_LIST_RECIEVED,  /* Reply */
     /* Create Group Protocols */
     CREATE_GROUP_REQUEST, /* char* Username, char* GroupName */
-    CREATE_GROUP_REPLY    /* Reply, char* GroupName, char* udpIP, int port */
+    CREATE_GROUP_REPLY    /* Reply, char* GroupName, char* udpIP, uint32_t port */
 } ProtocolType;
 
 typedef struct Protocol
@@ -58,11 +59,13 @@ typedef struct Protocol
     char m_password[MAX_PASSWORD_LEN];
     char m_groupName[MAX_GROUP_NAME_LEN];
     char m_udpIP[MAX_IP_LEN];
-    unsigned int m_port;
-    unsigned int m_usersInGroup;
-    unsigned char m_numOfGroupsLeft;
+    uint32_t m_port;
+    uint16_t m_usersInGroup;
+    unsigned char m_numOfGroupsLeft; /* //! Includes The Current Message! i.e - if 0 m_groupName contains Garbage! */
+    /* Members for broken messages fixing */
     unsigned char m_offset;
     switch_t m_finishedPack;
+    char m_buffer[MAX_MESSAGE_LEN];
 } Protocol;
 
 /**
