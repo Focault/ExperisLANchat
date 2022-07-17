@@ -11,12 +11,14 @@ typedef unsigned char switch_t;
 #define MIN_NAME_LEN 8
 #define MAX_PASSWORD_LEN 32
 #define MIN_PASSWORD_LEN 8
-#define MAX_GROUP_NAME_LEN 222
+#define MAX_GROUP_NAME_LEN 70
 #define MIN_GROUP_NAME_LEN
 #define MAX_IP_LEN 15
-#define MAX_MESSAGE_LEN 259
+#define MAX_MESSAGE_LEN 106
 
-#define MAX_GROUP_NUM 256
+#define MAX_GROUP_NUM 255
 #define MAX_MEMBERS_IN_GROUP 1000
+
+#define DEC_64KB 65536
 
 #endif /* __ECHATLIMITS_H__ */
