@@ -3,6 +3,7 @@
 #include "ClientApplication.h"
 #include "ClientNet.h"
 #include "UI.h"
+#include "Protocol.h"
 #include "EchatLimits.h"
 #include "ServerAddress.h"
 
