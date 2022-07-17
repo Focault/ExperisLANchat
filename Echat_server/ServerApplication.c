@@ -97,17 +97,33 @@ static int GetMessageAndProccess(Server *_server, int _clientID, void *_message,
     return TRUE;
 }
 
+static void LogOutNotify(ServerApp *_context, Protocol *_protocol)
+{
+
+}
+
 static void RegistrationRequestAndReply(Server *_server, int _clientID, ServerApp *_context, Protocol *_protocol)
 {
     size_t packageLength;
     char buffer[MAX_MESSAGE_LEN];
     UserManagerStatus status;
     status = UserRegister(_context->m_userManager, _protocol->m_name, _protocol->m_password);
-    if (status == USER_ILLEGAL_INPUT || status == USER_DUPLICATE || status == USER_MANGER_ALLOCATION_FAIL)
+    switch (status)
     {
-        _protocol->m_reply = REG_FAIL_USR_EXIST;
-    } else {
+    case USER_MANAGER_SUCCESS:
         _protocol->m_reply = SUCCESS;
+        break;
+    case USER_DUPLICATE:
+        _protocol->m_reply = REG_FAIL_USR_EXIST;
+        break;
+    case USER_MANGER_ALLOCATION_FAIL:
+    case USER_FILE_ERROR:
+        _protocol->m_reply = REG_FAIL_TRY_AGAIN;
+        break;
+    default:
+    case USER_ILLEGAL_INPUT:
+        _protocol->m_reply = REG_FAIL_ILLIGAL_INPUT;
+        break;
     }
     _protocol->m_protocolType = REGISTRATION_REPLY;
     Pack((void*)buffer, _protocol, &packageLength);

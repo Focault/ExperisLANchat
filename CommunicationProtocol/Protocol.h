@@ -19,11 +19,14 @@ typedef enum Reply
     SUCCESS,
     /* Registration Protocols Results */
     REG_FAIL_USR_EXIST,
+    REG_FAIL_ILLIGAL_INPUT,
+    REG_FAIL_TRY_AGAIN,
     /* Login Protocol Results */
     LOGIN_FAIL_ALREADY_ACTIVE,
     LOGIN_FAIL_WRONG_INPUT,
     /* Group Protocol Results */
     GROUP_FAIL_GROUP_NOT_FOUND,
+    GROUP_FAIL_GROUP_AT_FULL_CAPACITY,
     /* Create Group Protocol Results */
     CREATE_GROUP_FAIL_OVERFLOW,
     CREATE_GROUP_FAIL_ILLIGAL_INPUT,
