@@ -1,22 +1,23 @@
-TARGET= Echat_Server.out
+TARGET= ../Echat_Server.out
 CC= gcc
-CFLAGS= -ansi -g -pedantic -Wall -I $(DH) -I $(PROTO) -I $(TCP) -I $(USR) -I $(USRMGR)
+CFLAGS= -ansi -g -pedantic -Wall -I $(DH) -I $(PROTO) -I $(TCP) -I $(USR) -I $(USRMGR) -I $(SRV)
 OBJS= Protocol.o main.o ServerApplication.o UserManager.o User.o TCPserver.o
-DH= ../DLIB/DLIB-H/
-PROTO= ../CommunicationProtocol/
-TCP= TCPv1.3_selectDriver/Server/
-USRMGR= UserManager/
-USR= UserManager/User/
-LIB= -Wl,-rpath=../DLIB/ -L../DLIB/ -ldyn -lm
+DH= ../../DLIB/DLIB-H/
+PROTO= ../../CommunicationProtocol/
+TCP= ../TCPv1.3_selectDriver/Server/
+USRMGR= ../UserManager/
+USR= ../UserManager/User/
+SRV= ../
+LIB= -Wl,-rpath=../../DLIB/ -L../../DLIB/ -ldyn -lm
 
 $(TARGET): $(OBJS)
 	$(CC) -o $(TARGET) $(OBJS) $(LIB)
 
-main.o: main.c ServerApplication.h
-	$(CC) $(CFLAGS) -c main.c
+main.o: $(SRV)main.c $(SRV)ServerApplication.h
+	$(CC) $(CFLAGS) -c $(SRV)main.c
 
-ServerApplication.o: ServerApplication.c ServerApplication.h $(TCP)TCPserver.h $(PROTO)ServerAddress.h $(PROTO)EchatLimits.h $(PROTO)Protocol.h $(USRMGR)UserManager.h
-	$(CC) $(CFLAGS) -c ServerApplication.c
+ServerApplication.o: $(SRV)ServerApplication.c $(SRV)ServerApplication.h $(TCP)TCPserver.h $(PROTO)ServerAddress.h $(PROTO)EchatLimits.h $(PROTO)Protocol.h $(USRMGR)UserManager.h
+	$(CC) $(CFLAGS) -c $(SRV)ServerApplication.c
 
 Protocol.o: $(PROTO)Protocol.c $(PROTO)EchatLimits.h $(PROTO)Protocol.h
 	$(CC) $(CFLAGS) -c $(PROTO)Protocol.c
