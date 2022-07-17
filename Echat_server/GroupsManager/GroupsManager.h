@@ -85,10 +85,8 @@ GroupManager_Result LeaveGroup(GroupsManager *_groupManager, const char *_groupN
  * @return GroupManager_Result 
  * @retval GROUP_MANAGER_SUCCESS - succesfully updated groups
  * @retval GROUP_MANAGER_UNINITIALIZED - one of the pointers are NULL
- * 
- * @warning //! Destroy List when done 
  */
-GroupManager_Result UserExitChat(GroupsManager *_groupManager, List *_groupNames);
+GroupManager_Result UserExitAllGroups(GroupsManager *_groupManager, List *_groupNames);
 
 /**
  * @brief Get the Group Details

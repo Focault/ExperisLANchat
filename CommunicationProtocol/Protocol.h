@@ -27,10 +27,12 @@ typedef enum Reply
     /* Group Protocol Results */
     GROUP_FAIL_GROUP_NOT_FOUND,
     GROUP_FAIL_GROUP_AT_FULL_CAPACITY,
+    GROUP_FAIL_WRONG_USERNAME,
     /* Create Group Protocol Results */
     CREATE_GROUP_FAIL_OVERFLOW,
     CREATE_GROUP_FAIL_ILLIGAL_INPUT,
-    CREATE_GROUP_FAIL_DUPLICATE
+    CREATE_GROUP_FAIL_DUPLICATE,
+    CREATE_GROUP_FAIL_WRONG_USERNAME
 } Reply;
 
 typedef enum ProtocolType
