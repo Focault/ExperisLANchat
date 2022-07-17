@@ -28,7 +28,7 @@ User *CreateUser(const char *_userName, const char *_password)
 		{
 			return NULL;
 		}
-		if ((user->m_groups = ListCreate()) == NULL)
+		if ((user -> m_groups = ListCreate()) == NULL)
 		{
 			free(user);
 			return NULL;
@@ -73,6 +73,24 @@ UserResult UserLogin(User *_user)
 	return USER_SUCCESS;
 }
 
+
+
+UserResult UserLogout(User *_user)
+{
+	if (_user == NULL)
+	{
+		return USER_UNINITIALIZED_ERROR;
+	}
+	if (_user->m_loginFlag == FALSE)
+	{
+		return USER_ALREADY_NOT_ACTIVE;
+	}
+	_user->m_loginFlag = FALSE;
+	return USER_SUCCESS;
+}
+
+
+
 List *UserGetGroups(User *_user)
 {
 	if (_user == NULL)
@@ -91,7 +109,7 @@ UserResult UserAddGroup(User *_user, char *_groupName)
 		return USER_UNINITIALIZED_ERROR;
 	}
 
-	if (IsGroupExistInList(_user->m_groups, _groupName) == NULL)
+	if (IsGroupExistInList(_user-> m_groups, _groupName) == NULL)
 	{
 		if ((groupName = (char*)malloc(strlen(_groupName) * sizeof(char))) == NULL ||
 			ListPushHead(_user->m_groups, groupName) != LIST_SUCCESS)
@@ -113,10 +131,11 @@ UserResult UserLeaveGroup(User *_user, char *_groupName)
 		return USER_UNINITIALIZED_ERROR;
 	}
 
-	if ((iter = IsGroupExistInList(_user->m_groups, _groupName)) != NULL)
+	if ((iter = IsGroupExistInList(_user->m_groups, _groupName)) == NULL)
 	{
-		ListItrRemove(iter);
+	  return USER_INVALID_DATA_ERROR;
 	}
+	ListItrRemove(iter);
 	return USER_SUCCESS;
 }
 

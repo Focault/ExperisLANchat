@@ -3,12 +3,14 @@
 
 #include "GenListAPI.h"
 
+
 typedef enum UserResult
 {
     USER_SUCCESS,
     USER_UNINITIALIZED_ERROR,
     USER_INVALID_DATA_ERROR,
     USER_ALREADY_ACTIVE,
+    USER_ALREADY_NOT_ACTIVE,
     USER_ALLOCATION_FAILED
 } UserResult;
 
@@ -34,6 +36,16 @@ User *CreateUser(const char *_userName, const char *_password);
  * @retval USER_ALREADY_ACTIVE - if user is already connected
  */
 UserResult UserLogin(User *_user);
+/**
+ * @brief marks user as LOGOUT
+ * 
+ * @param _user pointer to user struct
+ * @return UserResult 
+ * @retval USER_SUCCESS
+ * @retval USER_UNINITIALIZED_ERROR - pointer is NULL
+ * @retval USER_ALREADY_NOT_ACTIVE - if user is already exit
+ */
+UserResult UserLogout(User *_user);
 
 /**
  * @brief return list of names of groups that a user are in

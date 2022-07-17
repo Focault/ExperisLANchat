@@ -12,6 +12,7 @@ typedef enum UserManagerStatus
     USER_ILLEGAL_INPUT,
     USER_WRONG_INPUT,
     USER_MANAGER_ALREADY_ACTIVE,
+    USER_MANAGER_ALREADY_NOT_ACTIVE,
     USER_MANAGER_UNINITIALIZED,
     USER_MANGER_ALLOCATION_FAIL,
     USER_FILE_ERROR
@@ -63,6 +64,20 @@ UserManagerStatus UserRegister(UserManager *_userManager, char *_userName, char 
 UserManagerStatus UserLogIn(UserManager *_userManager, char *_userName, char *_pass);
 
 /**
+ * @brief changes a status of user to LOGOUT
+ * 
+ * @param _userManager pointer to UserManager struct
+ * @param _userName  name of user
+ * @param _pass password
+ * @return UserManagerStatus 
+ * 
+ * @retval USER_MANAGER_SUCCESS - added user to user's manager
+ * @retval USER_MANAGER_ALREADY_NOT_ACTIVE - user already logged out
+ * @retval USER_WRONG_INPUT - username illigal
+ * @retval USER_MANAGER_UNINITIALIZED - one of the pointers are NULL
+ */
+UserManagerStatus UserLogOut(UserManager *_userManager, char *_userName);
+/**
  * @brief adds a name of group to a user's group connection list
  * 
  * @param _userManager pointer to UserManager struct
@@ -74,7 +89,7 @@ UserManagerStatus UserLogIn(UserManager *_userManager, char *_userName, char *_p
  * @retval USER_MANAGER_UNINITIALIZED - one of the pointers are NULL
  * @retval USER_WRONG_INPUT - no user with that name
  */
-UserManagerStatus UserJoinGroup(UserManager *_userManager, char *_userName, char *_group);
+UserManagerStatus UserManagerJoinGroup(UserManager *_userManager, char *_userName, char *_group);
 
 /**
  * @brief mark that user had left a group
@@ -100,5 +115,7 @@ UserManagerStatus UserManagerLeaveGroup(UserManager *_userManager, char *_userNa
  * @warning if one of the pointers are NULL returns NULL
  */
 List* UserExit(UserManager *_userManager, char *_userName);
+
+
 
 #endif /*__USERMANAGER_H__*/

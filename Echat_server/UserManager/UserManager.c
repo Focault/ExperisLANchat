@@ -2,10 +2,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include "HashMapAPI.h"
+#include "User/User.h"
 #include "User.h"
 #include "UserManager.h"
 #include "EchatLimits.h"
-#define USER_DATA_BASE "UserManager/UserInfo.txt"
+#define USER_DATA_BASE "UserInfo.txt"
 #define HASH_MAP_SIZE 1000
 
 struct UserManager
@@ -110,6 +111,31 @@ UserManagerStatus UserLogIn(UserManager *_userManager, char *_userName, char *_p
 	return USER_MANAGER_SUCCESS;
 }
 
+
+
+UserManagerStatus UserLogOut(UserManager *_userManager, char *_userName)
+{
+	User *user;
+	if (_userManager == NULL || _userName == NULL )
+	{
+		return USER_MANAGER_UNINITIALIZED;
+	}
+	if (HashMap_Find(_userManager->m_users, _userName, (void**)&user) )
+	{
+		return USER_WRONG_INPUT;
+	}
+	if (UserLogout(user) == USER_ALREADY_NOT_ACTIVE)
+	{
+		return USER_MANAGER_ALREADY_NOT_ACTIVE;
+	}
+	return USER_MANAGER_SUCCESS;
+}
+
+
+
+
+
+
 /* Static Functions */
 
 static size_t HashFunc(const void *_key)
@@ -175,4 +201,82 @@ static void RemoveNewLine(char *_str)
 	{
 		_str[len - 1] = '\0';
 	}
+}
+
+
+
+UserManagerStatus UserManagerJoinGroup(UserManager *_userManager, char *_userName, char *_group)
+{
+  User* user;
+ 
+ 
+   if( _userManager == NULL || _userName == NULL ||  _group == NULL)
+    {
+      return USER_MANAGER_UNINITIALIZED;
+    }
+    
+    if(HashMap_Find(_userManager->m_users, _userName, (void**)&user) != MAP_SUCCESS)
+    {
+      return USER_WRONG_INPUT;
+    }
+    
+    if(!IsLoggedInUser(user))
+    {
+      return USER_WRONG_INPUT;
+    }
+       return UserAddGroup(user, _group);
+
+}
+
+
+UserManagerStatus UserManagerLeaveGroup(UserManager *_userManager, char *_userName, char *_group)
+{
+
+  User* user;
+ 
+ 
+   if( _userManager == NULL || _userName == NULL ||  _group == NULL)
+    {
+      return USER_MANAGER_UNINITIALIZED;
+    }
+    
+    if(HashMap_Find(_userManager->m_users, _userName, (void**)&user) != MAP_SUCCESS)
+    {
+      return USER_WRONG_INPUT;
+    }
+    
+   return UserLeaveGroup(user, _group);
+
+}
+
+List* UserExit(UserManager *_userManager, char *_userName)
+{
+  List* userGroups;
+  User* user;
+  
+
+  if( _userManager == NULL || _userName == NULL )
+    {
+      return NULL;
+    }
+    
+     if(HashMap_Find(_userManager->m_users, _userName, (void**)&user) != MAP_SUCCESS)
+    {
+      return NULL;
+    }
+    
+    if(!IsLoggedInUser(user))
+     {
+       return NULL;
+     }
+    
+     userGroups = UserGetGroups(user);
+     
+     if(UserLogout(user) != USER_SUCCESS)
+      {
+        return NULL; 
+      }
+      
+      return userGroups;
+ 
 }
