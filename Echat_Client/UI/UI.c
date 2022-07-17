@@ -45,7 +45,7 @@ void ClientRequestStatus(Reply _reply)
     switch (_reply)
     {
     case SUCCESS:
-        printf("Registration successful!");
+        printf("You're in!\n");
         break;
 
     case REG_FAIL_USR_EXIST:
@@ -53,7 +53,7 @@ void ClientRequestStatus(Reply _reply)
         break;
 
     case LOGIN_FAIL_ALREADY_ACTIVE:
-        printf("Username already logged in.\n");
+        printf("User already logged in.\n");
         break;
     
     case LOGIN_FAIL_WRONG_INPUT:
