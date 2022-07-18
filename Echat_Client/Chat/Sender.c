@@ -5,7 +5,6 @@
 #include <netinet/in.h>
 #include "Chat.h"
 #define MESSAGE_LENGTH 1000
-#define ARGS_COUNT 5
 #define TRUE 1
 
 
@@ -18,19 +17,14 @@ int main(int argc, char const *argv[])
     char message[MESSAGE_LENGTH - 50], finalMessage[MESSAGE_LENGTH], loop;
     FILE* fp;
     
-    if (argc < ARGS_COUNT)
-    {
-        printf("ARGUMENTS COUNT ERROR\n");
-    }
-    
     pid = getpid();
     if ((fp = fopen(PID_FILE_NAME, "a+")) != NULL)
     {
-        fputs("argv[4]", fp);
+        fprintf(fp, "%d", pid);
         fputc('\n', fp);
-        fputs((char*)&pid, fp);
-        fputc('\n', fp);
+        fflush(fp);
     }
+    fclose(fp);
 
     if ((sock = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
     {

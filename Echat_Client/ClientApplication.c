@@ -1,5 +1,6 @@
 #include <stdlib.h> /*malloc, free*/
 #include <stdio.h>
+#include <string.h> /* strcpy */
 #include "Chat.h"
 #include "ClientApplication.h"
 #include "ClientNet.h"
@@ -13,6 +14,8 @@
 struct Client {
         ClientNet* m_clientNet;
 };
+
+
 
 
 static ClientResult HandleClientRequest(Client* _client, Protocol* _protocol);
@@ -42,7 +45,7 @@ Client* CreateClient()
 
 ClientResult RunClient(Client* _client)
 {
-    MenuOptions option;
+    MenuOptions option = REGISTER;
     ClientResult errcode;
     Protocol proto;
 
@@ -50,10 +53,10 @@ ClientResult RunClient(Client* _client)
     {
         return CLIENT_UNINITIALIZED;
     }
-
-    option = WelcomeMenu();
+    
     while (option != EXIT)
     {
+        option = WelcomeMenu();
         if (option == REGISTER)
         {
             GetUserDetails(proto.m_name, proto.m_password);
@@ -85,7 +88,6 @@ ClientResult RunClient(Client* _client)
                 }
             }
         }
-        RunClient(_client);
     }
     return CLIENT_SUCCESS;
 }
@@ -189,7 +191,7 @@ static ClientResult HandleLogin(Client* _client, Protocol* _protocol)
                 break;
             }
 
-            CloseChat(_protocol->m_groupName); /* */
+            CloseChat(_protocol->m_udpIP);
             break;
 
         case LOGOUT:
@@ -198,7 +200,7 @@ static ClientResult HandleLogin(Client* _client, Protocol* _protocol)
             {
                 return errcode;
             }
-            /* close chat */
+            CloseChat(_protocol->m_udpIP);
             break;      
     }
     return errcode;
@@ -223,7 +225,7 @@ static void GroupEntrance(Client* _client, Protocol* _protocol, ProtocolType _pr
     }
 
     snprintf(port, MAX_PORT_DIGITS, "%d", _protocol->m_port);
-    RunChat(_protocol->m_udpIP, port, _protocol->m_name, _protocol->m_groupName);
+    RunChat(_protocol->m_udpIP, port, _protocol->m_name); 
 }
 
 
