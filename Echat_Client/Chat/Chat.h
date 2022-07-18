@@ -9,13 +9,13 @@
  * @param _port Port number of the chatroom. Can't be null.
  * @param _username Username of the user joining the chatroom.
 */
-void RunChat(char* _IPaddress, char* _port, char* _username);
+void RunChat(char* _IPaddress, char* _port, char* _username, char* _groupname);
 
 
 /**
  * @brief Function closes an open chatroom.
 */
-void CloseChat();
+void CloseChat(char* _groupName);
 
 
 

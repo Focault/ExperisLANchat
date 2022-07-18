@@ -52,37 +52,40 @@ ClientResult RunClient(Client* _client)
     }
 
     option = WelcomeMenu();
-
-    if (option == REGISTER)
+    while (option != EXIT)
     {
-        GetUserDetails(proto.m_name, proto.m_password);
-        proto.m_protocolType = REGISTRATION_REQUEST;
-        if ((errcode = HandleClientRequest(_client, &proto)) != CLIENT_SUCCESS)
+        if (option == REGISTER)
         {
-            return errcode;
-        }
-        /* inform user */
-        ClientRequestStatus(proto.m_reply);
-    }
-    else if (option == LOGIN)
-    {
-        GetUserDetails(proto.m_name, proto.m_password);
-        proto.m_protocolType = LOGIN_REQUEST;
-        if ((errcode = HandleClientRequest(_client, &proto)) != CLIENT_SUCCESS)
-        {
-            return errcode;
-        }
-        /* inform user */
-        ClientRequestStatus(proto.m_reply);
-
-        while(TRUE)
-        {
-            HandleLogin(_client, &proto);
-            if (proto.m_protocolType == LOGOUT_NOTIFY)
+            GetUserDetails(proto.m_name, proto.m_password);
+            proto.m_protocolType = REGISTRATION_REQUEST;
+            if ((errcode = HandleClientRequest(_client, &proto)) != CLIENT_SUCCESS)
             {
-                RunClient(_client);
+                return errcode;
+            }
+            /* inform user */
+            ClientRequestStatus(proto.m_reply);
+        }
+        else if (option == LOGIN)
+        {
+            GetUserDetails(proto.m_name, proto.m_password);
+            proto.m_protocolType = LOGIN_REQUEST;
+            if ((errcode = HandleClientRequest(_client, &proto)) != CLIENT_SUCCESS)
+            {
+                return errcode;
+            }
+            /* inform user */
+            ClientRequestStatus(proto.m_reply);
+
+            while(TRUE)
+            {
+                HandleLogin(_client, &proto);
+                if (proto.m_protocolType == LOGOUT_NOTIFY)
+                {
+                    break;
+                }
             }
         }
+        RunClient(_client);
     }
     return CLIENT_SUCCESS;
 }
@@ -186,7 +189,7 @@ static ClientResult HandleLogin(Client* _client, Protocol* _protocol)
                 break;
             }
 
-            CloseChat(); /* */
+            CloseChat(_protocol->m_groupName); /* */
             break;
 
         case LOGOUT:
@@ -195,9 +198,8 @@ static ClientResult HandleLogin(Client* _client, Protocol* _protocol)
             {
                 return errcode;
             }
-            break;
-
-            
+            /* close chat */
+            break;      
     }
     return errcode;
 }
@@ -221,7 +223,7 @@ static void GroupEntrance(Client* _client, Protocol* _protocol, ProtocolType _pr
     }
 
     snprintf(port, MAX_PORT_DIGITS, "%d", _protocol->m_port);
-    RunChat(_protocol->m_udpIP, port, _protocol->m_name);
+    RunChat(_protocol->m_udpIP, port, _protocol->m_name, _protocol->m_groupName);
 }
 
 

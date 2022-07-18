@@ -7,13 +7,13 @@
 #include <netinet/in.h> 
 #include "Chat.h"
 #define MESSAGE_LENGTH 1000
-#define ARGS_COUNT 4
+#define ARGS_COUNT 5
 #define TRUE 1
 
 
 int main(int argc, char const *argv[])
 {
-    int sock, reuse, sin_len;
+    int sock, reuse, sin_len, pid;
     ssize_t read_bytes;
     struct sockaddr_in sin;
     struct ip_mreq mc_request; 
@@ -26,9 +26,12 @@ int main(int argc, char const *argv[])
         printf("ARGUMENTS COUNT ERROR\n");
     }
     
+    pid = getpid();
     if ((fp = fopen(PID_FILE_NAME, "a+")) != NULL)
     {
-        fprintf(fp, "%d", getpid());
+        fputs(argv[4], fp);
+        fputc('\n', fp);
+        fputs((char*)&pid, fp);
         fputc('\n', fp);
     }
     
@@ -79,7 +82,7 @@ int main(int argc, char const *argv[])
         }
 
         /* add date and time */
-        printf("%s: %s\n", argv[3], message);
+        printf("%s\n", message);
     }
 
     return 0;

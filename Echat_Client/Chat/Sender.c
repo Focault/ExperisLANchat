@@ -5,17 +5,17 @@
 #include <netinet/in.h>
 #include "Chat.h"
 #define MESSAGE_LENGTH 1000
-#define ARGS_COUNT 4
+#define ARGS_COUNT 5
 #define TRUE 1
 
 
 int main(int argc, char const *argv[])
 {
-    int sock; 
+    int sock, pid; 
     ssize_t sent_bytes;
     struct sockaddr_in sin;
     struct in_addr local_interface;
-    char message[MESSAGE_LENGTH], loop;
+    char message[MESSAGE_LENGTH - 50], finalMessage[MESSAGE_LENGTH], loop;
     FILE* fp;
     
     if (argc < ARGS_COUNT)
@@ -23,9 +23,12 @@ int main(int argc, char const *argv[])
         printf("ARGUMENTS COUNT ERROR\n");
     }
     
+    pid = getpid();
     if ((fp = fopen(PID_FILE_NAME, "a+")) != NULL)
     {
-        fprintf(fp, "%d", getpid());
+        fputs("argv[4]", fp);
+        fputc('\n', fp);
+        fputs((char*)&pid, fp);
         fputc('\n', fp);
     }
 
@@ -44,8 +47,8 @@ int main(int argc, char const *argv[])
     {
         printf("New message: ");
         fgets(message, MESSAGE_LENGTH, stdin);
-        
-        sent_bytes = sendto(sock, message, sizeof(message), 0, (struct sockaddr*)&sin, sizeof(sin));
+        sprintf(finalMessage, "%s: %s", argv[3], message);
+        sent_bytes = sendto(sock, finalMessage, sizeof(finalMessage), 0, (struct sockaddr*)&sin, sizeof(sin));
         if (sent_bytes < 0)
         {
             printf("SEND FAIL\n");
