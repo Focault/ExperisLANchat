@@ -48,7 +48,7 @@ List* ListGroups(GroupsManager *_groupManager);
  * 
  * @param _groupList - pointer to pointer to a list of GroupInfo structs for all of the groups in the app
  */
-void DemolishGroupList(List** _groupList);
+void DemolishGroupList(GroupsManager *_groupManager);
 
 /**
  * @brief Join an existent group (update counter)

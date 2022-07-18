@@ -5,27 +5,27 @@
 #define AM_I_SENTINEL(node) ((node)->m_father == (node))
 #define IS_TWO_SONS(node) ((node)->m_left != NULL && (node)->m_right != NULL)
 
-typedef struct Node Node;
+typedef struct BSTNode BSTNode;
 
-struct Node
+struct BSTNode
 {
 	void *m_data;
-	Node *m_left;
-	Node *m_right;
-	Node *m_father;
+	BSTNode *m_left;
+	BSTNode *m_right;
+	BSTNode *m_father;
 };
 
 struct BSTree
 {
-	Node m_sentinel;
+	BSTNode m_sentinel;
 	LessComparator m_compare;
 };
 
-static BSTreeItr Insert(Node **_place, void *_data, Node *_father);
-static void DestroyTree(Node *_root, void (*_destroyer)(void*));
-static BSTreeItr InsertRec(BSTree *_tree, Node *_read, void *_item);
-static void RemoveItem(Node *_it);
-static BSTreeItr ActInOrder(Node *_root, ActionFunction _action, void* _context);
+static BSTreeItr Insert(BSTNode **_place, void *_data, BSTNode *_father);
+static void DestroyTree(BSTNode *_root, void (*_destroyer)(void*));
+static BSTreeItr InsertRec(BSTree *_tree, BSTNode *_read, void *_item);
+static void RemoveItem(BSTNode *_it);
+static BSTreeItr ActInOrder(BSTNode *_root, ActionFunction _action, void* _context);
 
 BSTree* BSTreeCreate(LessComparator _less)
 {
@@ -78,7 +78,7 @@ BSTreeItr BSTreeItrBegin(const BSTree* _tree)
 	{
 		return NULL;
 	}
-	for (begin = (BSTreeItr*)&_tree->m_sentinel; ((Node*)begin)->m_left != NULL; begin = (BSTreeItr*)((Node*)begin)->m_left);
+	for (begin = (BSTreeItr*)&_tree->m_sentinel; ((BSTNode*)begin)->m_left != NULL; begin = (BSTreeItr*)((BSTNode*)begin)->m_left);
 	return begin;
 }
 
@@ -97,26 +97,26 @@ int BSTreeItrEquals(BSTreeItr _a, BSTreeItr _b)
 	{
 		return 0;
 	}
-	return ((Node*)_a == (Node*)_b);
+	return ((BSTNode*)_a == (BSTNode*)_b);
 }
 
 BSTreeItr BSTreeItrNext(BSTreeItr _it)
 {
-	Node *next;
+	BSTNode *next;
 	if (_it == NULL)
 	{
 		return NULL;
 	}
-	if (AM_I_SENTINEL((Node*)_it))
+	if (AM_I_SENTINEL((BSTNode*)_it))
 	{
 		return _it;
 	}
-	if ((next = ((Node*)_it)->m_right) != NULL)
+	if ((next = ((BSTNode*)_it)->m_right) != NULL)
 	{
 		for (; next->m_left != NULL; next = next->m_left);
 		return (BSTreeItr*)next;
 	}
-	next = (Node*)_it;
+	next = (BSTNode*)_it;
 	while (1)
 	{
 		if (AM_I_LEFT_SON(next))
@@ -129,20 +129,20 @@ BSTreeItr BSTreeItrNext(BSTreeItr _it)
 
 BSTreeItr BSTreeItrPrev(BSTreeItr _it)
 {
-	Node *prev;
+	BSTNode *prev;
 	if (_it == NULL)
 	{
 		return NULL;
 	}
-	if ((prev = ((Node*)_it)->m_left) != NULL)
+	if ((prev = ((BSTNode*)_it)->m_left) != NULL)
 	{
-		if (AM_I_SENTINEL((Node*)_it))
+		if (AM_I_SENTINEL((BSTNode*)_it))
 		{
 			for (; prev->m_right != NULL; prev = prev->m_right);
 		}
 		return (BSTreeItr*)prev;
 	}
-	prev = (Node*)_it;
+	prev = (BSTNode*)_it;
 	while (1)
 	{
 		if (AM_I_RIGHT_SON(prev))
@@ -160,16 +160,16 @@ BSTreeItr BSTreeItrPrev(BSTreeItr _it)
 void* BSTreeItrRemove(BSTreeItr _it)
 {
 	void* data;
-	Node *remove = (Node*)_it;
-	if (_it == NULL || AM_I_SENTINEL((Node*)_it))
+	BSTNode *remove = (BSTNode*)_it;
+	if (_it == NULL || AM_I_SENTINEL((BSTNode*)_it))
 	{
 		return NULL;
 	}
 	data = remove->m_data;
 	if (IS_TWO_SONS(remove))
 	{
-		remove = (Node*)BSTreeItrNext(_it);
-		((Node*)_it)->m_data = remove->m_data;
+		remove = (BSTNode*)BSTreeItrNext(_it);
+		((BSTNode*)_it)->m_data = remove->m_data;
 	}
 	RemoveItem(remove);
 	free(remove);
@@ -178,11 +178,11 @@ void* BSTreeItrRemove(BSTreeItr _it)
 
 void* BSTreeItrGet(BSTreeItr _it)
 {
-	if (_it == NULL || AM_I_SENTINEL((Node*)_it))
+	if (_it == NULL || AM_I_SENTINEL((BSTNode*)_it))
 	{
 		return NULL;
 	}
-	return ((Node*)_it)->m_data;
+	return ((BSTNode*)_it)->m_data;
 }
 
 BSTreeItr BSTreeFindFirst(const BSTree* _tree, PredicateFunction _predicate, void* _context)
@@ -192,9 +192,9 @@ BSTreeItr BSTreeFindFirst(const BSTree* _tree, PredicateFunction _predicate, voi
 	{
 		return NULL;
 	}
-	for (read = BSTreeItrBegin(_tree); (Node*)read != &_tree->m_sentinel; read = BSTreeItrNext(read))
+	for (read = BSTreeItrBegin(_tree); (BSTNode*)read != &_tree->m_sentinel; read = BSTreeItrNext(read))
 	{
-		if (_predicate(((Node*)read)->m_data, _context))
+		if (_predicate(((BSTNode*)read)->m_data, _context))
 		{
 			break;
 		}
@@ -216,8 +216,8 @@ BSTreeItr BSTreeForEach(const BSTree* _tree, BSTreeTraversalMode _mode, ActionFu
 	switch (_mode)
 	{
 	case BSTREE_TRAVERSAL_PREORDER:
-		if ((!_action(((Node*)result)->m_data, _context)) ||
-		   ((result = ActInOrder(((Node*)result)->m_left, _action, _context)) != NULL) ||
+		if ((!_action(((BSTNode*)result)->m_data, _context)) ||
+		   ((result = ActInOrder(((BSTNode*)result)->m_left, _action, _context)) != NULL) ||
 		   ((result = ActInOrder(_tree->m_sentinel.m_left->m_right, _action, _context)) != NULL))
 		{
 			return result;
@@ -230,7 +230,7 @@ BSTreeItr BSTreeForEach(const BSTree* _tree, BSTreeTraversalMode _mode, ActionFu
 		}
 		return (BSTreeItr*)&_tree->m_sentinel;
 	case BSTREE_TRAVERSAL_POSTORDER:
-		if (((result = ActInOrder(((Node*)result)->m_left, _action, _context)) != NULL) ||
+		if (((result = ActInOrder(((BSTNode*)result)->m_left, _action, _context)) != NULL) ||
 		    ((result = ActInOrder(_tree->m_sentinel.m_left->m_right, _action, _context)) != NULL) ||
 		    (!_action(_tree->m_sentinel.m_left->m_data, _context)))
 		{
@@ -243,7 +243,7 @@ BSTreeItr BSTreeForEach(const BSTree* _tree, BSTreeTraversalMode _mode, ActionFu
 
 /* Main Static Functions */ 
 
-static BSTreeItr ActInOrder(Node *_root, ActionFunction _action, void* _context)
+static BSTreeItr ActInOrder(BSTNode *_root, ActionFunction _action, void* _context)
 {
 	BSTreeItr *result = NULL;
 	if (_root == NULL)
@@ -262,9 +262,9 @@ static BSTreeItr ActInOrder(Node *_root, ActionFunction _action, void* _context)
 	return result;
 }
 
-static void RemoveItem(Node *_it)
+static void RemoveItem(BSTNode *_it)
 {
-	Node *son;
+	BSTNode *son;
 	if ((son = _it->m_left) == NULL)
 	{
 		son = _it->m_right;
@@ -281,10 +281,10 @@ static void RemoveItem(Node *_it)
 	_it->m_father->m_right = son;
 }
 
-static BSTreeItr Insert(Node **_place, void *_data, Node *_father)
+static BSTreeItr Insert(BSTNode **_place, void *_data, BSTNode *_father)
 {
-	Node *ptr;
-	if ((ptr = (Node*)malloc(sizeof(Node))) != NULL)
+	BSTNode *ptr;
+	if ((ptr = (BSTNode*)malloc(sizeof(BSTNode))) != NULL)
 	{
 		ptr->m_data = _data;
 		ptr->m_left = NULL;
@@ -295,7 +295,7 @@ static BSTreeItr Insert(Node **_place, void *_data, Node *_father)
 	return (BSTreeItr*)ptr;
 }
 
-static void DestroyTree(Node *_root, void (*_destroyer)(void*))
+static void DestroyTree(BSTNode *_root, void (*_destroyer)(void*))
 {
 	if (_root == NULL)
 	{
@@ -310,7 +310,7 @@ static void DestroyTree(Node *_root, void (*_destroyer)(void*))
 	free(_root);
 }
 
-static BSTreeItr InsertRec(BSTree *_tree, Node *_read, void *_item)
+static BSTreeItr InsertRec(BSTree *_tree, BSTNode *_read, void *_item)
 {
 	int result = _tree->m_compare(_item, _read->m_data);
 	if (result > 0)

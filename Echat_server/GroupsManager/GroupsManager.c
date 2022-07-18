@@ -81,11 +81,11 @@ GroupsManager* CreateGroupManager()
 List* ListGroups(GroupsManager *_groupManager)
 {
     List *groups = NULL;
-    if (_groupManager != NULL && ((groups = ListCreate()) != NULL))
+    if (_groupManager != NULL && HashMap_Size(_groupManager->m_groups) && ((groups = ListCreate()) != NULL))
     {
         if (_groupManager->m_lastList != NULL)
         {
-            DemolishGroupList(&_groupManager->m_lastList);
+            DemolishGroupList(_groupManager);
         }
         HashMap_ForEach(_groupManager->m_groups, CreateGroupListAction, (void*)groups);
         _groupManager->m_lastList = groups;
@@ -93,11 +93,11 @@ List* ListGroups(GroupsManager *_groupManager)
     return groups;
 }
 
-void DemolishGroupList(List** _groupList)
+void DemolishGroupList(GroupsManager *_groupManager)
 {
-    if (_groupList != NULL && *_groupList != NULL)
+    if (_groupManager->m_lastList != NULL)
     {
-        ListDestroy(_groupList, DestroyGroupInfo);
+        ListDestroy(&_groupManager->m_lastList, DestroyGroupInfo);
     }
 }
 
@@ -191,7 +191,7 @@ void DestroyGroupManager(GroupsManager **_groupManager)
     {
         if ((*_groupManager)->m_lastList != NULL)
         {
-            DemolishGroupList(&(*_groupManager)->m_lastList);
+            DemolishGroupList(*_groupManager);
         }
         QueueDestroy(&(*_groupManager)->m_addresses, DestroyConnectionInfo);
         HashMap_Destroy(&(*_groupManager)->m_groups, GroupHashKeyDestroy, DestroyGroup);
@@ -333,12 +333,14 @@ static void GroupDecreaseAndEraseIfEmpty(GroupsManager *_groupManager, const cha
 {
     char *key, udpIP[MAX_IP_LEN];
     uint32_t port;
+    Group *group;
     GroupDecreaseSize(_group);
     if (IsGroupEmpty(_group))
     {
-        HashMap_Remove(_groupManager->m_groups, _groupName, (void*)&key, NULL);
-        GroupGetDetails(_group, udpIP, &port);
+        HashMap_Remove(_groupManager->m_groups, _groupName, (void*)&key, (void*)&group);
+        GroupGetDetails(group, udpIP, &port);
         AddAddressToPoll(_groupManager->m_addresses, udpIP, port);
-        DestroyGroup((void*)_group);
+        DestroyGroup((void*)group);
+        free(key);
     }
 }

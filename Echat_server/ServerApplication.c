@@ -127,7 +127,7 @@ static void SendGroupListToClient(Server *_server, int _clientID, ServerApp *_co
 {
     size_t packageLength;
     char buffer[MAX_MESSAGE_LEN];
-    const GroupInfo *details;
+    GroupInfo *details;
     if (_protocol->m_protocolType == GROUP_LIST_REQUEST)
     {
         if (_context->m_groupInfoList != NULL)
@@ -154,7 +154,8 @@ static void SendGroupListToClient(Server *_server, int _clientID, ServerApp *_co
         strncpy(_protocol->m_groupName, details->m_groupName, MAX_GROUP_NAME_LEN);
         _protocol->m_usersInGroup = details->m_usersInGroup;
     } else {
-        DemolishGroupList(&_context->m_groupInfoList);
+        DemolishGroupList(_context->m_groupManager);
+        _context->m_groupInfoList = NULL;
     }
     Pack((void*)buffer, _protocol, &packageLength);
     SendMessage(_server, _clientID, (void*)buffer, packageLength);
