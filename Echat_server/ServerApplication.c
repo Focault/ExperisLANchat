@@ -125,6 +125,8 @@ static int GetMessageAndProccess(Server *_server, int _clientID, void *_message,
 
 static void SendGroupListToClient(Server *_server, int _clientID, ServerApp *_context, Protocol *_protocol)
 {
+    size_t packageLength;
+    char buffer[MAX_MESSAGE_LEN];
     const GroupInfo *details;
     if (_protocol->m_protocolType == GROUP_LIST_REQUEST)
     {
@@ -145,6 +147,7 @@ static void SendGroupListToClient(Server *_server, int _clientID, ServerApp *_co
         --_context->m_groupsLeft;
     }
     _protocol->m_numOfGroupsLeft = _context->m_groupsLeft;
+    _protocol->m_protocolType = GROUP_LIST_REPLY;
     if (_context->m_groupsLeft)
     {
         details = (GroupInfo*)ListItrGet(_context->m_read);
@@ -153,6 +156,8 @@ static void SendGroupListToClient(Server *_server, int _clientID, ServerApp *_co
     } else {
         DemolishGroupList(&_context->m_groupInfoList);
     }
+    Pack((void*)buffer, _protocol, &packageLength);
+    SendMessage(_server, _clientID, (void*)buffer, packageLength);
 }
 
 static void GroupLeaveNotify(ServerApp *_context, Protocol *_protocol)
@@ -224,8 +229,11 @@ static void GroupCreateRequestAndReply(Server *_server, int _clientID, ServerApp
             case GROUP_MANAGER_DUPLICATE:
                 _protocol->m_reply = CREATE_GROUP_FAIL_DUPLICATE;
                 break;
-            default:
+            case GROUP_MANAGER_UNINITIALIZED:
                 _protocol->m_reply = CREATE_GROUP_FAIL_ILLIGAL_INPUT;
+                break;
+            default:
+                _protocol->m_reply = CREATE_GROUP_FAIL_TRY_AGAIN;
             }
             UserManagerLeaveGroup(_context->m_userManager, _protocol->m_name, _protocol->m_groupName);
         } else {

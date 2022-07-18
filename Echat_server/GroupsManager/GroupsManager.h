@@ -38,7 +38,7 @@ GroupsManager* CreateGroupManager();
  * @param _groupManager - pointer to groupManager struct
  * @return List* - pointer to a list of GroupInfo structs for all of the groups in the app
  * 
- * @warning if groupManager is NULL or no groups exist returns NULL
+ * @warning if groupManager is NULL, allocation failed or no groups exist returns NULL
  * @details //! Demolition of the list is done by DemolishGroupList function and calling it is user's responsibility
  */
 List* ListGroups(GroupsManager *_groupManager);
@@ -78,7 +78,7 @@ GroupManager_Result JoinGroup(GroupsManager *_groupManager, const char *_groupNa
 GroupManager_Result LeaveGroup(GroupsManager *_groupManager, const char *_groupName);
 
 /**
- * @brief update that user had left for each of the groups in the list (destroies list when finnished)
+ * @brief update that user had left for each of the groups in the list (Whipes the List clean but doesn't destroy it)
  * 
  * @param _groupManager - pointer to groupManager struct
  * @param _groupNames - list of groups names (contains only strings)
@@ -116,6 +116,7 @@ GroupManager_Result GetGroupDetails(GroupsManager *_groupManager, const char *_g
  * @retval GROUP_MANAGER_UNINITIALIZED - one of the pointers are NULL
  * @retval GROUP_MANAGER_DUPLICATE - a group of that name already exists
  * @retval GROUP_MANAGER_GROUPS_OVERFLOW - can't create new group because number of groups is at limit
+ * @retval GROUP_MANAGER_ALLOCATION_FAIL - allocation failed
  */
 GroupManager_Result CreateNewGroup(GroupsManager *_groupManager, const char *_groupName, char **_udpIP, uint32_t *_port);
 

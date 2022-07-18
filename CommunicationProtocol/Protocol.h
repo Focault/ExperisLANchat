@@ -1,6 +1,6 @@
 #ifndef __PROTOCOL_H__
 #define __PROTOCOL_H__
-#include <stddef.h> /* size_t */
+#include <stddef.h>    /* size_t */
 #include <arpa/inet.h> /* uint32_t, uint16_t */
 #include "EchatLimits.h"
 
@@ -32,7 +32,8 @@ typedef enum Reply
     CREATE_GROUP_FAIL_OVERFLOW,
     CREATE_GROUP_FAIL_ILLIGAL_INPUT,
     CREATE_GROUP_FAIL_DUPLICATE,
-    CREATE_GROUP_FAIL_WRONG_USERNAME
+    CREATE_GROUP_FAIL_WRONG_USERNAME,
+    CREATE_GROUP_FAIL_TRY_AGAIN
 } Reply;
 
 typedef enum ProtocolType
@@ -41,16 +42,16 @@ typedef enum ProtocolType
     REGISTRATION_REQUEST, /* char* Username, char* Password */
     REGISTRATION_REPLY,   /* Reply */
     /* Login Protocols */
-    LOGIN_REQUEST,        /* char* Username, char* Password */
-    LOGIN_REPLY,          /* Reply */
-    LOGOUT_NOTIFY,        /* char* Username */
+    LOGIN_REQUEST, /* char* Username, char* Password */
+    LOGIN_REPLY,   /* Reply */
+    LOGOUT_NOTIFY, /* char* Username */
     /* Group Protocols */
-    GROUP_JOIN_REQUEST,   /* char* Username, char* GroupName */
-    GROUP_JOIN_REPLY,     /* Reply, char* GroupName, char* udpIP, uint32_t port */
-    GROUP_LEAVE,          /* char* Username, char* GroupName */
-    GROUP_LIST_REQUEST,   /*  */
-    GROUP_LIST_REPLY,     /* unsigned char numOfGroupsLeft, char* GroupName, uint16_t usersInGroup */
-    GROUP_LIST_RECIEVED,  /* Reply */
+    GROUP_JOIN_REQUEST,  /* char* Username, char* GroupName */
+    GROUP_JOIN_REPLY,    /* Reply, char* GroupName, char* udpIP, uint32_t port */
+    GROUP_LEAVE,         /* char* Username, char* GroupName */
+    GROUP_LIST_REQUEST,  /*  */
+    GROUP_LIST_REPLY,    /* unsigned char numOfGroupsLeft, char* GroupName, uint16_t usersInGroup */
+    GROUP_LIST_RECIEVED, /* Reply */
     /* Create Group Protocols */
     CREATE_GROUP_REQUEST, /* char* Username, char* GroupName */
     CREATE_GROUP_REPLY    /* Reply, char* GroupName, char* udpIP, uint32_t port */
@@ -75,25 +76,25 @@ typedef struct Protocol
 
 /**
  * @brief Packs a message for TCP transmission
- * 
+ *
  * @param _PackedMessage - pointer to buffer for packed message (Have to be at least MAX_MESSAGE_LEN long!)
  * @param _params - pointer to protocol parameters - Only members relevent to protocol will be packed (see ProtocolType)
  * @param _packetLen[optional] - will present real message len after packing
- * @return PackResult 
+ * @return PackResult
  * @retval PACK_SUCCESS - packed message to buffer
  * @retval PACK_FAIL - couldn't pack message - if one of the pointers or the relevant members are uninitiallized
- * 
+ *
  * @warning //! The Protocol Type in the struct must be set to desired protocol
  */
 PackResult Pack(void *_packedMessage, const Protocol *_params, size_t *_packetLen);
 
 /**
  * @brief Unpacks a message received through TCP transmission to Protocol struct
- * 
+ *
  * @param _PackedMessage - pointer to recieved message
  * @param _params - pointer to Protocol struct to write message contents to
- * @return PackResult 
- * @retval PACK_SUCCESS - unpacked message to buffer 
+ * @return PackResult
+ * @retval PACK_SUCCESS - unpacked message to buffer
  * @retval PACK_FAIL - couldn't unpack message - if one of the pointers or the relevant members are unset
  */
 PackResult UnPack(const void *_packedMessage, Protocol *_params);

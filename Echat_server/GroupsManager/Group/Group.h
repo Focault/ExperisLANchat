@@ -14,7 +14,7 @@ typedef enum GroupResult
 } GroupResult;
 
 /**
- * @brief Create a Group
+ * @brief Create a Group and update it's population to 1
  * 
  * @param _groupName - pointer to group name
  * @param _udpIP - pointer to UDP IP for group
