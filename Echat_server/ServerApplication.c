@@ -163,7 +163,7 @@ static void SendGroupListToClient(Server *_server, int _clientID, ServerApp *_co
 static void GroupLeaveNotify(ServerApp *_context, Protocol *_protocol)
 {
     UserManagerLeaveGroup(_context->m_userManager, _protocol->m_name, _protocol->m_groupName);
-    LeaveGroup(_context->m_userManager, _protocol->m_groupName);
+    LeaveGroup(_context->m_groupManager, _protocol->m_groupName);
 }
 
 static void LogOutNotify(ServerApp *_context, Protocol *_protocol)
@@ -190,7 +190,7 @@ static void GroupJoinRequestAndReply(Server *_server, int _clientID, ServerApp *
     }
     if (groupStatus == GROUP_MANAGER_SUCCESS)
     {
-        if ((userStatus = UserJoinGroup(_context->m_userManager, _protocol->m_name, _protocol->m_groupName)) != USER_MANAGER_SUCCESS)
+        if ((userStatus = UserManagerJoinGroup(_context->m_userManager, _protocol->m_name, _protocol->m_groupName)) != USER_MANAGER_SUCCESS)
         {
             _protocol->m_reply = GROUP_FAIL_WRONG_USERNAME;
             LeaveGroup(_context->m_groupManager, _protocol->m_groupName);
@@ -199,7 +199,7 @@ static void GroupJoinRequestAndReply(Server *_server, int _clientID, ServerApp *
     _protocol->m_protocolType = GROUP_JOIN_REPLY;
     if (groupStatus == GROUP_MANAGER_SUCCESS && userStatus == USER_MANAGER_SUCCESS)
     {
-        GetGroupDetails(_context->m_groupManager, _protocol->m_groupName, &_protocol->m_udpIP, &_protocol->m_port);
+        GetGroupDetails(_context->m_groupManager, _protocol->m_groupName, _protocol->m_udpIP, &_protocol->m_port);
         _protocol->m_reply = SUCCESS;
     }
     Pack((void*)buffer, _protocol, &packageLength);
@@ -212,14 +212,14 @@ static void GroupCreateRequestAndReply(Server *_server, int _clientID, ServerApp
     char buffer[MAX_MESSAGE_LEN];
     UserManagerStatus userStatus;
     GroupManager_Result groupStatus;
-    if ((userStatus = UserJoinGroup(_context->m_userManager, _protocol->m_name, _protocol->m_groupName)) != USER_MANAGER_SUCCESS)
+    if ((userStatus = UserManagerJoinGroup(_context->m_userManager, _protocol->m_name, _protocol->m_groupName)) != USER_MANAGER_SUCCESS)
     {
         _protocol->m_reply = CREATE_GROUP_FAIL_WRONG_USERNAME;
     }
     _protocol->m_protocolType = GROUP_JOIN_REPLY;
     if (userStatus == USER_MANAGER_SUCCESS)
     {
-        if (groupStatus = CreateNewGroup(_context->m_groupManager, _protocol->m_groupName, &_protocol->m_udpIP, &_protocol->m_port) != GROUP_MANAGER_SUCCESS)
+        if ((groupStatus = CreateNewGroup(_context->m_groupManager, _protocol->m_groupName, _protocol->m_udpIP, &_protocol->m_port)) != GROUP_MANAGER_SUCCESS)
         {
             switch (groupStatus)
             {

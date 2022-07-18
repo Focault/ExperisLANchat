@@ -143,7 +143,7 @@ static void GetAndCheckUsername(char* _username)
     printf("Please enter your username:\nUsername must be between %d and %d characters. Use letters and numbers only.\n", MIN_NAME_LEN, MAX_NAME_LEN);
     scanf("%s", _username);
 
-    while (_username[i] != '\0')
+    /* while (_username[i] != '\0')
     {
         if ((_username[i] > 9 && _username[i] < 65) || (_username[i] > 90 && _username[i] < 97) || (_username[i] > 122))
         {
@@ -151,7 +151,7 @@ static void GetAndCheckUsername(char* _username)
             GetAndCheckUsername(_username);
         }
         i++;
-    }
+    } */
 }
 
 
@@ -162,7 +162,7 @@ static void GetAndCheckPassword(char* _password)
     printf("Please enter your password:\nPassword must be between %d and %d characters. Use letters and numbers only\n", MIN_PASSWORD_LEN, MAX_PASSWORD_LEN);
     scanf("%s", _password);
 
-    while (_password[i] != '\0')
+    /* while (_password[i] != '\0')
     {
         if ((_password[i] > 9 && _password[i] < 65) || (_password[i] > 90 && _password[i] < 97) || (_password[i] > 122))
         {
@@ -170,6 +170,6 @@ static void GetAndCheckPassword(char* _password)
             GetAndCheckPassword(_password);
         }
         i++;
-    }
+    } */
 }
 

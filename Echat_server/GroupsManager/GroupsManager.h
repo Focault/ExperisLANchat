@@ -101,7 +101,7 @@ GroupManager_Result UserExitAllGroups(GroupsManager *_groupManager, List *_group
  * @retval GROUP_MANAGER_UNINITIALIZED - one of the pointers are NULL
  * @retval GROUP_MANAGER_GROUP_NOT_FOUND - no group of that name
  */
-GroupManager_Result GetGroupDetails(GroupsManager *_groupManager, const char *_groupName, char **_udpIP, uint32_t *_port);
+GroupManager_Result GetGroupDetails(GroupsManager *_groupManager, const char *_groupName, char *_udpIP, uint32_t *_port);
 
 /**
  * @brief Create a new group and update it's population to 1
@@ -118,7 +118,7 @@ GroupManager_Result GetGroupDetails(GroupsManager *_groupManager, const char *_g
  * @retval GROUP_MANAGER_GROUPS_OVERFLOW - can't create new group because number of groups is at limit
  * @retval GROUP_MANAGER_ALLOCATION_FAIL - allocation failed
  */
-GroupManager_Result CreateNewGroup(GroupsManager *_groupManager, const char *_groupName, char **_udpIP, uint32_t *_port);
+GroupManager_Result CreateNewGroup(GroupsManager *_groupManager, const char *_groupName, char *_udpIP, uint32_t *_port);
 
 /**
  * @brief Destroy Group Manager

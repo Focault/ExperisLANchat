@@ -14,7 +14,7 @@ struct Group
 	size_t m_magicNum;
 };
 
-Group *CreateGroup(char *_groupName, char *_udpIP, uint32_t _port)
+Group *CreateGroup(const char *_groupName, char *_udpIP, uint32_t _port)
 {
 	Group *group;
 	if (_groupName == NULL || _udpIP == NULL || _port < MIN_PORT_NUM || _port > DEC_64KB)
@@ -76,7 +76,7 @@ GroupResult GroupDecreaseSize(Group *_group)
 	return GROUP_SUCCESS;
 }
 
-GroupResult GroupGetDetails(Group *_group, char **_udpIP, uint32_t *_port)
+GroupResult GroupGetDetails(Group *_group, char *_udpIP, uint32_t *_port)
 {
 
 	if (_group == NULL || _udpIP == NULL || _port == NULL)
@@ -84,7 +84,7 @@ GroupResult GroupGetDetails(Group *_group, char **_udpIP, uint32_t *_port)
 		return GROUP_UNINITIALIZED;
 	}
 
-	strncpy(*_udpIP, _group->m_udpIP, MAX_IP_LEN);
+	strcpy(_udpIP, _group->m_udpIP);
 	*_port = _group->m_port;
 
 	return GROUP_SUCCESS;

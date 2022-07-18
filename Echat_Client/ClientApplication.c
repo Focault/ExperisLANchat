@@ -1,9 +1,9 @@
-#include <stdio.h>
 #include <stdlib.h> /*malloc, free*/
+#include <stdio.h>
+#include "Chat.h"
 #include "ClientApplication.h"
 #include "ClientNet.h"
 #include "UI.h"
-#include "Chat.h"
 #include "Protocol.h"
 #include "EchatLimits.h"
 #include "ServerAddress.h"
@@ -173,7 +173,7 @@ static ClientResult HandleLogin(Client* _client, Protocol* _protocol)
             break;
 
         case LEAVE_GROUP:
-            GetGroupName(&_protocol->m_groupName);
+            GetGroupName(_protocol->m_groupName);
             _protocol->m_protocolType = GROUP_LEAVE;
             if ((errcode = HandleClientRequest(_client, _protocol) != CLIENT_SUCCESS))
             {
@@ -197,9 +197,9 @@ static ClientResult HandleLogin(Client* _client, Protocol* _protocol)
             }
             break;
 
-        default:
             
     }
+    return errcode;
 }
 
 
@@ -207,7 +207,7 @@ static void GroupEntrance(Client* _client, Protocol* _protocol, ProtocolType _pr
 {
     char port[MAX_PORT_DIGITS];
 
-    GetGroupName(&_protocol->m_groupName);
+    GetGroupName(_protocol->m_groupName);
     _protocol->m_protocolType = _protocolType;
     if (HandleClientRequest(_client, _protocol) != CLIENT_SUCCESS)
     {

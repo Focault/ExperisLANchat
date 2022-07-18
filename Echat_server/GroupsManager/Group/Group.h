@@ -23,7 +23,7 @@ typedef enum GroupResult
  * 
  * @warning if one of the pointers are NULL or failed allocation returns NULL
  */
-Group *CreateGroup(char *_groupName, char *_udpIP, uint32_t _port);
+Group *CreateGroup(const char *_groupName, char *_udpIP, uint32_t _port);
 
 /**
  * @brief Increase Group size by 1
@@ -59,7 +59,7 @@ GroupResult GroupDecreaseSize(Group *_group);
  * @retval GROUP_SUCCESS - grabed group details successfuly
  * @retval GROUP_UNINITIALIZED - one of the pointers is uninitialized 
  */
-GroupResult GroupGetDetails(Group *_group, char **_udpIP, uint32_t *_port);
+GroupResult GroupGetDetails(Group *_group, char *_udpIP, uint32_t *_port);
 
 /**
  * @brief return size of group

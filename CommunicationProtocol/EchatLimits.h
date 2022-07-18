@@ -16,7 +16,7 @@ typedef unsigned char switch_t;
 #define MAX_IP_LEN 15
 #define MAX_MESSAGE_LEN 106
 
-#define MAX_GROUP_NUM 255
+#define MAX_GROUP_NUM 100 /* to fix */
 #define MAX_MEMBERS_IN_GROUP 1000
 
 #define MIN_PORT_NUM 1024

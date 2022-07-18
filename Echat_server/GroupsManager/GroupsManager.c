@@ -47,7 +47,7 @@ static int CreateGroupListAction(const void* _key, void* _value, void* _context)
 static void DestroyGroupInfo(void* _groupInfo);
 static void DestroyConnectionInfo(void* _connectionInfo);
 static int ExitAllGroupsActionFunc(void* _element, void* _context);
-static GroupManager_Result CreateNewGroupHandler(GroupsManager *_groupManager, const char *_groupName, char **_udpIP, uint32_t *_port);
+static GroupManager_Result CreateNewGroupHandler(GroupsManager *_groupManager, const char *_groupName, char *_udpIP, uint32_t *_port);
 static void GroupDecreaseAndEraseIfEmpty(GroupsManager *_groupManager, const char *_groupName, Group *_group);
 
 GroupsManager* CreateGroupManager()
@@ -60,7 +60,7 @@ GroupsManager* CreateGroupManager()
             free(manager);
             return NULL;
         }
-        if ((manager->m_addresses = QueueCreate(MAX_GROUP_NUM)) == NULL)
+        if ((manager->m_addresses = QueueCreate(MAX_GROUP_NUM + 1)) == NULL)
         {
             HashMap_Destroy(&manager->m_groups, NULL, NULL);
             free(manager);
@@ -112,7 +112,7 @@ GroupManager_Result JoinGroup(GroupsManager *_groupManager, const char *_groupNa
     {
         return GROUP_MANAGER_GROUP_NOT_FOUND;
     }
-    if (GroupIncreasedSize(group) == GROUP_IS_AT_FULL_CAPACITY)
+    if (GroupIncreaseSize(group) == GROUP_IS_AT_FULL_CAPACITY)
     {
         return GROUP_MANAGER_GROUP_AT_FULL_CAPACITY;
     }
@@ -137,7 +137,10 @@ GroupManager_Result LeaveGroup(GroupsManager *_groupManager, const char *_groupN
 GroupManager_Result UserExitAllGroups(GroupsManager *_groupManager, List *_groupNames)
 {
     ListItr begin, end;
-    GroupContext context = {NULL, _groupManager, _groupNames};
+    GroupContext context;
+    context.m_prev = NULL;
+    context.m_groupManager = _groupManager;
+    context.m_groupNames = _groupNames;
     if (_groupManager == NULL || _groupNames == NULL)
     {
         return GROUP_MANAGER_UNINITIALIZED;
@@ -149,7 +152,7 @@ GroupManager_Result UserExitAllGroups(GroupsManager *_groupManager, List *_group
     return GROUP_MANAGER_SUCCESS;
 }
 
-GroupManager_Result GetGroupDetails(GroupsManager *_groupManager, const char *_groupName, char **_udpIP, uint32_t *_port)
+GroupManager_Result GetGroupDetails(GroupsManager *_groupManager, const char *_groupName, char *_udpIP, uint32_t *_port)
 {
     Group *group;
     if (_groupManager == NULL || _groupName == NULL || _udpIP == NULL || _port == NULL)
@@ -164,7 +167,7 @@ GroupManager_Result GetGroupDetails(GroupsManager *_groupManager, const char *_g
     return GROUP_MANAGER_SUCCESS;
 }
 
-GroupManager_Result CreateNewGroup(GroupsManager *_groupManager, const char *_groupName, char **_udpIP, uint32_t *_port)
+GroupManager_Result CreateNewGroup(GroupsManager *_groupManager, const char *_groupName, char *_udpIP, uint32_t *_port)
 {
     Group *group;
     if (_groupManager == NULL || _groupName == NULL || _udpIP == NULL || _port == NULL)
@@ -199,20 +202,20 @@ void DestroyGroupManager(GroupsManager **_groupManager)
 
 /* Static Functions */
 
-static GroupManager_Result CreateNewGroupHandler(GroupsManager *_groupManager, const char *_groupName, char **_udpIP, uint32_t *_port)
+static GroupManager_Result CreateNewGroupHandler(GroupsManager *_groupManager, const char *_groupName, char *_udpIP, uint32_t *_port)
 {
     Group *group;
     ConnectionInfo *address;
     char *groupKey;
     size_t keyLen;
-    keyLen = strnlen(_groupName, MAX_GROUP_NAME_LEN);
+    keyLen = strlen(_groupName);
     QueueRemove(_groupManager->m_addresses, (void*)&address);
     if ((group = CreateGroup(_groupName, address->m_udpIP, address->m_port)) == NULL)
     {
         QueueInsert(_groupManager->m_addresses, (void*)address);
         return GROUP_MANAGER_ALLOCATION_FAIL;
     }
-    if (groupKey = (char*)malloc(keyLen) == NULL)
+    if ((groupKey = (char*)malloc(keyLen)) == NULL)
     {
         QueueInsert(_groupManager->m_addresses, (void*)address);
         DestroyGroup((void*)group);
@@ -226,7 +229,7 @@ static GroupManager_Result CreateNewGroupHandler(GroupsManager *_groupManager, c
         free(groupKey);
         return GROUP_MANAGER_ALLOCATION_FAIL;
     }
-    strncpy(*_udpIP, address->m_udpIP, MAX_IP_LEN);
+    strcpy(_udpIP, address->m_udpIP);
     *_port = address->m_port;
     DestroyConnectionInfo((void*)address);
     return GROUP_MANAGER_SUCCESS;
@@ -235,7 +238,7 @@ static GroupManager_Result CreateNewGroupHandler(GroupsManager *_groupManager, c
 /* function that returns the index of the element from its key */
 static size_t GroupsHashFunc(const void* _key)
 {
-    size_t index = 0, length = strnlen((char*)_key, MAX_GROUP_NAME_LEN);
+    size_t index = 0, length = strlen((char*)_key);
     register int i;
     for (i = 0; i < length; ++i)
     {
@@ -258,12 +261,12 @@ static void GroupHashKeyDestroy(void* _key)
 /* Returns TRUE[1] on success and FALSE[0] upon fail */
 static int InitializeAddressPoll(Queue *_queue)
 {
-    const char fixedAddress = "224.0.0.";
+    const char fixedAddress[] = "224.0.0.";
     char fullAddress[MAX_IP_LEN];
     register unsigned char i;
-    for (i = 0; i <= MAX_GROUP_NUM; ++i)
+    for (i = 0; i < MAX_GROUP_NUM; ++i)
     {
-        snprintf(fullAddress, MAX_IP_LEN, "%s%c", fixedAddress, i);
+        sprintf(fullAddress, "%s%d", fixedAddress, i);
         if (!AddAddressToPoll(_queue, fullAddress, DEFAULT_UDP_PORT))
         {
             return FALSE;
@@ -328,13 +331,13 @@ static int ExitAllGroupsActionFunc(void* _element, void* _context)
 
 static void GroupDecreaseAndEraseIfEmpty(GroupsManager *_groupManager, const char *_groupName, Group *_group)
 {
-    char *key, *udpIP;
+    char *key, udpIP[MAX_IP_LEN];
     uint32_t port;
-    GroupDecreasedSize(_group);
+    GroupDecreaseSize(_group);
     if (IsGroupEmpty(_group))
     {
         HashMap_Remove(_groupManager->m_groups, _groupName, (void*)&key, NULL);
-        GroupGetDetails(_group, &udpIP, &port);
+        GroupGetDetails(_group, udpIP, &port);
         AddAddressToPoll(_groupManager->m_addresses, udpIP, port);
         DestroyGroup((void*)_group);
     }

@@ -6,7 +6,7 @@
 typedef enum MenuOptions {
             REGISTER,
             LOGIN,
-            EXIT,
+            EXIT
 } MenuOptions;
 
 
@@ -15,7 +15,7 @@ typedef enum ChatOptions {
             CREATE_GROUP,
             JOIN_GROUP,
             LEAVE_GROUP,
-            LOGOUT,
+            LOGOUT
 } ChatOptions;
 
 

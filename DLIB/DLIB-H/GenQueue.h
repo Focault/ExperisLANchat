@@ -1,7 +1,11 @@
 #ifndef __GENQUEUE_H__
 #define __GENQUEUE_H__
 #include <stdlib.h>		/*for size_t*/
-#define PTR_NULL 2
+
+#ifndef PTR_NULL
+#define PTR_NULL -1
+#endif /* PTR_NULL */
+
 #define EMPTY 1
 #define NOT_EMPTY 0
 
@@ -64,7 +68,7 @@ QueueResult QueueRemove(Queue* _queue,void** _item);
  * @return size_t - return -
  * @retval NOT_EMPTY (0) - not empty
  * @retval EMPTY (1) - Empty
- * @retval PTR_NULL (2) - pointer is NULL
+ * @retval PTR_NULL (-1) - pointer is NULL
  */
 size_t QueueIsEmpty(Queue* _queue);
 

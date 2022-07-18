@@ -16,8 +16,8 @@ void RunChat(char* _IPaddress, char* _port, char* _username)
         sprintf(port, "%s", _port);
         sprintf(username, "%s", _username);
 
-        sprintf(sender, "gnome-terminal -- bash -c \"./Sender.out %s %s %s; exec bash\"", ip, port, _username);
-        sprintf(receiver, "gnome-terminal -- bash -c \"./Receiver.out %s %s %s; exec bash\"", ip, port, _username);
+        sprintf(sender, "gnome-terminal -e \"./Sender.out %s %s %s; \"", ip, port, _username);
+        sprintf(receiver, "gnome-terminal -e \"./Receiver.out %s %s %s; \"", ip, port, _username);
 
         system(receiver);
         system(sender);
