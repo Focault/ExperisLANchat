@@ -19,6 +19,7 @@ typedef unsigned char switch_t;
 #define MAX_GROUP_NUM 255
 #define MAX_MEMBERS_IN_GROUP 1000
 
+#define MIN_PORT_NUM 1024
 #define DEC_64KB 65536
 
 #endif /* __ECHATLIMITS_H__ */

@@ -10,7 +10,6 @@ typedef enum GroupResult
 {
     GROUP_SUCCESS,
     GROUP_UNINITIALIZED,
-    GROUP_IS_EMPTY,
     GROUP_IS_AT_FULL_CAPACITY
 } GroupResult;
 
