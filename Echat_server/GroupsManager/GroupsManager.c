@@ -260,7 +260,7 @@ static int InitializeAddressPoll(Queue *_queue)
 {
     const char fixedAddress = "224.0.0.";
     char fullAddress[MAX_IP_LEN];
-    register unsigned i;
+    register unsigned char i;
     for (i = 0; i <= MAX_GROUP_NUM; ++i)
     {
         snprintf(fullAddress, MAX_IP_LEN, "%s%c", fixedAddress, i);
@@ -333,7 +333,7 @@ static void GroupDecreaseAndEraseIfEmpty(GroupsManager *_groupManager, const cha
     GroupDecreasedSize(_group);
     if (IsGroupEmpty(_group))
     {
-        HashMap_Remove(_groupManager->m_groups, _groupName, (void*)&key, (void**)&_group);
+        HashMap_Remove(_groupManager->m_groups, _groupName, (void*)&key, NULL);
         GroupGetDetails(_group, &udpIP, &port);
         AddAddressToPoll(_groupManager->m_addresses, udpIP, port);
         DestroyGroup((void*)_group);
