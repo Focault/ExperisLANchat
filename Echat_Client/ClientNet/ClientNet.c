@@ -15,7 +15,7 @@
 struct ClientNet{
         int m_socket;
         char* m_IP;
-        int m_port;
+        uint32_t m_port;
         struct sockaddr_in m_sin;
 };
 
@@ -23,7 +23,7 @@ struct ClientNet{
 static ClientNetResult Initialize(ClientNet* _clientNet);
 
 
-ClientNet* InitializeClientNet(char* _IPaddress, int _port)
+ClientNet* InitializeClientNet(char* _IPaddress, uint32_t _port)
 {
     ClientNet* netPTR;
     

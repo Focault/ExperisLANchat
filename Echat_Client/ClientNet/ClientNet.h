@@ -1,5 +1,6 @@
 #ifndef __CLIENTNET_H__
 #define __CLIENTNET_H__
+#include <arpa/inet.h>
 
 
 typedef enum ClientNetResult {
@@ -24,7 +25,7 @@ typedef struct ClientNet ClientNet;
  * @return Function returns pointer to the newly created client net on success.
  *         NULL if client net allocation fails, if socket function fails or if connect function fails
  */
-ClientNet* InitializeClientNet(char* _IPaddress, int _port);
+ClientNet* InitializeClientNet(char* _IPaddress, uint32_t _port);
 
 
 /**
