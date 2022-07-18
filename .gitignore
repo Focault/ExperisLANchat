@@ -31,3 +31,9 @@ DLIB/DLIB-O/HashMap.o
 DLIB/DLIB-O/internal.o
 DLIB/DLIB-O/ListFunctions.o
 DLIB/DLIB-O/ListItr.o
+Echat_Client/Chat/Receiver.c
+Echat_Client/Chat/chat.out
+Echat_Client/Chat/chattest.c
+Echat_Client/Chat/ProcessIDs
+Echat_Client/Chat/Receiver.out
+Echat_Client/Chat/Sender.out

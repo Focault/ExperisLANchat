@@ -12,7 +12,7 @@ typedef unsigned char switch_t;
 #define MAX_PASSWORD_LEN 32
 #define MIN_PASSWORD_LEN 8
 #define MAX_GROUP_NAME_LEN 70
-#define MIN_GROUP_NAME_LEN
+#define MIN_GROUP_NAME_LEN 10
 #define MAX_IP_LEN 15
 #define MAX_MESSAGE_LEN 106
 
