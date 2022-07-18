@@ -69,7 +69,7 @@ UserResult UserLogin(User *_user)
 	{
 		return USER_ALREADY_ACTIVE;
 	}
-	_user->m_loginFlag = TRUE;
+	_user-> m_loginFlag = TRUE;
 	return USER_SUCCESS;
 }
 
@@ -109,8 +109,12 @@ UserResult UserAddGroup(User *_user, char *_groupName)
 		return USER_UNINITIALIZED_ERROR;
 	}
 
-	if (IsGroupExistInList(_user-> m_groups, _groupName) == NULL)
+	if (IsGroupExistInList(_user-> m_groups, _groupName) != NULL)
 	{
+	  return USER_INVALID_DATA_ERROR;
+	}
+	
+	
 		if ((groupName = (char*)malloc(strlen(_groupName) * sizeof(char))) == NULL ||
 			ListPushHead(_user->m_groups, groupName) != LIST_SUCCESS)
 		{
@@ -118,7 +122,7 @@ UserResult UserAddGroup(User *_user, char *_groupName)
 		}
 
 		strcpy(groupName, _groupName);
-	}
+	
 	return USER_SUCCESS;
 }
 

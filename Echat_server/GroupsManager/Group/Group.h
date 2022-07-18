@@ -10,6 +10,7 @@ typedef enum GroupResult
 {
     GROUP_SUCCESS,
     GROUP_UNINITIALIZED,
+    GROUP_IS_EMPTY,
     GROUP_IS_AT_FULL_CAPACITY
 } GroupResult;
 
@@ -35,7 +36,7 @@ Group *CreateGroup(char *_groupName, char *_udpIP, uint32_t _port);
  * @retval GROUP_UNINITIALIZED - group pointer is uninitialized 
  * @retval GROUP_IS_AT_FULL_CAPACITY - group is at MAX_MEMBERS_IN_GROUP and can't add another member
  */
-GroupResult GroupIncreasedSize(Group *_group);
+GroupResult GroupIncreaseSize(Group *_group);
 
 /**
  * @brief Decrease Group size by 1
@@ -46,7 +47,7 @@ GroupResult GroupIncreasedSize(Group *_group);
  * @retval GROUP_SUCCESS - group decreased size counter successfully
  * @retval GROUP_UNINITIALIZED - group pointer is uninitialized 
  */
-GroupResult GroupDecreasedSize(Group *_group);
+GroupResult GroupDecreaseSize(Group *_group);
 
 /**
  * @brief Get Group's connectivity details
