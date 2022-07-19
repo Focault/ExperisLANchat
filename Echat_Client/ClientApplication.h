@@ -8,8 +8,8 @@ typedef enum ClientResult {
             CLIENT_PACKING_FAILED,
             CLIENT_UNPACKING_FAILED,
             CLIENT_SEND_FAILED,
-            CLIENT_RECEIVE_FAILED
-
+            CLIENT_RECEIVE_FAILED,
+            CLIENT_CLOSE_CHAT_FAILED
 } ClientResult;
 
 

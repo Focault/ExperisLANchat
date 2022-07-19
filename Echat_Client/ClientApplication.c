@@ -8,19 +8,29 @@
 #include "Protocol.h"
 #include "EchatLimits.h"
 #include "ServerAddress.h"
+#include "GenListAPI.h"
+#include "ListFunctions.h"
 #define MAX_PORT_DIGITS 5
 
 
 struct Client {
         ClientNet* m_clientNet;
+        List* m_groupsIP;
 };
 
-
+typedef struct Data {
+        char m_groupname[MAX_GROUP_NAME_LEN];
+        char m_IP[MAX_IP_LEN];
+}Data;
 
 
 static ClientResult HandleClientRequest(Client* _client, Protocol* _protocol);
 static ClientResult HandleLogin(Client* _client, Protocol* _protocol);
 static void GroupEntrance(Client* _client, Protocol* _protocol, ProtocolType _protocolType);
+static char* GetGroupIP(List* _list, char* _groupName);
+static ClientResult CloseAllChats(Client* _client);
+static int FindGoupName(void* _element, void* _context);
+static int ActionCloseChat(void* _element, void* _context);
 
 
 Client* CreateClient()
@@ -29,6 +39,12 @@ Client* CreateClient()
     
     if ((clientPTR = (Client*)malloc(sizeof(Client))) == NULL)
     {
+        return NULL;
+    }
+
+    if ((clientPTR->m_groupsIP = ListCreate()) == NULL)
+    {
+        free(clientPTR);
         return NULL;
     }
 
@@ -146,6 +162,7 @@ static ClientResult HandleLogin(Client* _client, Protocol* _protocol)
 {
     int chatOption;
     ClientResult errcode;
+    char leaveIP[10];
     
     chatOption = ChatMenu();
     switch (chatOption)
@@ -190,8 +207,8 @@ static ClientResult HandleLogin(Client* _client, Protocol* _protocol)
                 ClientRequestStatus(_protocol->m_reply);
                 break;
             }
-
-            CloseChat(_protocol->m_udpIP);
+            strcpy(leaveIP, GetGroupIP(_client->m_groupsIP, _protocol->m_groupName));
+            CloseChat(leaveIP);
             break;
 
         case LOGOUT:
@@ -200,7 +217,7 @@ static ClientResult HandleLogin(Client* _client, Protocol* _protocol)
             {
                 return errcode;
             }
-            CloseChat(_protocol->m_udpIP);
+            CloseAllChats(_client);
             break;      
     }
     return errcode;
@@ -210,6 +227,7 @@ static ClientResult HandleLogin(Client* _client, Protocol* _protocol)
 static void GroupEntrance(Client* _client, Protocol* _protocol, ProtocolType _protocolType)
 {
     char port[MAX_PORT_DIGITS];
+    Data* data;
 
     GetGroupName(_protocol->m_groupName);
     _protocol->m_protocolType = _protocolType;
@@ -224,12 +242,63 @@ static void GroupEntrance(Client* _client, Protocol* _protocol, ProtocolType _pr
         return;
     }
 
+    if ((data = (Data*)malloc(sizeof(Data))) == NULL)
+    {
+        return;
+    }
+    strcpy(data->m_groupname, _protocol->m_groupName);
+    strcpy(data->m_IP, _protocol->m_udpIP);
+    if (ListPushTail(_client->m_groupsIP, data) != LIST_SUCCESS)
+    {
+        return;
+    }
+
     snprintf(port, MAX_PORT_DIGITS, "%d", _protocol->m_port);
     RunChat(_protocol->m_udpIP, port, _protocol->m_name); 
 }
 
 
+static char* GetGroupIP(List* _list, char* _groupName)
+{
+    ListItr begin, end, target;
+    void* data;
+
+    begin = ListItrBegin(_list);
+    end = ListItrEnd(_list);
+
+    target = ListItrFindFirst(begin, end, FindGoupName, _groupName);
+    if (target != end)
+    {
+        data = ListItrGet(target);
+        
+    }
+    return ((Data*)data)->m_IP;
+}
 
 
+static ClientResult CloseAllChats(Client* _client)
+{
+    ListItr begin, end;
+
+    begin = ListItrBegin(_client->m_groupsIP);
+    end = ListItrEnd(_client->m_groupsIP);
+
+    if (ListItrForEach(begin, end, ActionCloseChat, NULL) != end)
+    {
+        return CLIENT_CLOSE_CHAT_FAILED;
+    }
+    return CLIENT_SUCCESS;
+}
 
 
+static int FindGoupName(void* _element, void* _context)
+{
+    return !strcmp(((Data*)_element)->m_groupname, (char*)_context);
+}
+
+
+static int ActionCloseChat(void* _element, void* _context)
+{
+    CloseChat(((Data*)_element)->m_IP);
+    return 1;
+}
