@@ -78,6 +78,10 @@ ClientResult RunClient(Client* _client)
             }
             /* inform user */
             ClientRequestStatus(proto.m_reply);
+            if (proto.m_reply != SUCCESS)
+            {
+                continue;
+            }
 
             while(TRUE)
             {

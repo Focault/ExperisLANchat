@@ -130,22 +130,30 @@ void GetGroupName(char* _groupName)
 {
     int i=0;
     putchar('\n');
-    printf("Please enter a group name. Name must be between %d and %d characters. Use letters and numbers only.\n", MIN_GROUP_NAME_LEN, MAX_GROUP_NAME_LEN);
+    printf("Please enter a group name. Name must be between %d and %d characters. Use letters and numbers only. Spaces are allowed.\n", MIN_GROUP_NAME_LEN, MAX_GROUP_NAME_LEN);
     putchar('\n');
-    scanf("%s", _groupName);
+    scanf("\n");
+    scanf("%[^\n]%*c", _groupName);
+    fflush(stdin);
 
     while (_groupName[i] != '\0')
     {
-        if ((_groupName[i] > 9 && _groupName[i] < 65) || (_groupName[i] > 90 && _groupName[i] < 97) || (_groupName[i] > 122))
+        if (!((_groupName[i] >= '0' && _groupName[i] <= '9') || 
+              (_groupName[i] >= 'A' && _groupName[i] <= 'Z') || 
+              (_groupName[i] >= 'a' && _groupName[i] <= 'z') || 
+              _groupName[i] == ' '))
         {
-            printf("Illegal name.\n");
-            putchar('\n');
-            GetAndCheckUsername(_groupName);
+            break;
         }
         i++;
     }
+    if (_groupName[i] != '\0' || i < (MIN_GROUP_NAME_LEN - 1))
+    {
+        printf("Illegal name. Please Try Again\n");
+        putchar('\n');
+        GetGroupName(_groupName);
+    }
 }
-
 
 void ListGroupDetails(char* _groupName, int _numOfParticipants, int _numOfGroupsLeft)
 {
@@ -163,15 +171,22 @@ static void GetAndCheckUsername(char* _username)
     putchar('\n');
     scanf("%s", _username);
 
-    /* while (_username[i] != '\0')
+    while (_username[i] != '\0')
     {
-        if ((_username[i] > 9 && _username[i] < 65) || (_username[i] > 90 && _username[i] < 97) || (_username[i] > 122))
+        if (!((_username[i] >= '0' && _username[i] <= '9') || 
+              (_username[i] >= 'A' && _username[i] <= 'Z') || 
+              (_username[i] >= 'a' && _username[i] <= 'z')))
         {
-            printf("Illegal username.\n");
-            GetAndCheckUsername(_username);
+            break;
         }
         i++;
-    } */
+    }
+    if (_username[i] != '\0' || i < (MIN_NAME_LEN - 1))
+    {
+        printf("Illegal name. Please Try Again\n");
+        putchar('\n');
+        GetAndCheckUsername(_username);
+    }
 }
 
 
@@ -184,14 +199,21 @@ static void GetAndCheckPassword(char* _password)
     putchar('\n');
     scanf("%s", _password);
 
-    /* while (_password[i] != '\0')
+    while (_password[i] != '\0')
     {
-        if ((_password[i] > 9 && _password[i] < 65) || (_password[i] > 90 && _password[i] < 97) || (_password[i] > 122))
+        if (!((_password[i] >= '0' && _password[i] <= '9') || 
+              (_password[i] >= 'A' && _password[i] <= 'Z') || 
+              (_password[i] >= 'a' && _password[i] <= 'z')))
         {
-            printf("Illegal password.\n");
-            GetAndCheckPassword(_password);
+            break;
         }
         i++;
-    } */
+    }
+    if (_password[i] != '\0' || i < (MIN_PASSWORD_LEN - 1))
+    {
+        printf("Illegal Password. Please Try Again\n");
+        putchar('\n');
+        GetAndCheckPassword(_password);
+    }
 }
 

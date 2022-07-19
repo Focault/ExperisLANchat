@@ -835,7 +835,7 @@ test TestCreateGroupRequestProtocolGood3()
     void *packedMessage;
     size_t packageLen;
     protocolPack.m_protocolType = CREATE_GROUP_REQUEST;
-    strcpy(protocolPack.m_name, "Tomer123Tomer123Tomer123Tomer123");
+    strcpy(protocolPack.m_name, "Tomer12 Tomer12 Tomer12 Tomer123");
     strcpy(protocolPack.m_groupName, "This Name Group is the maximum length of 70 charachters long - wow!!!!");
     
     if ((packedMessage = (void*)malloc(sizeof(MAX_MESSAGE_LEN))) == NULL) {return FAIL;}
