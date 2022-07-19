@@ -47,8 +47,10 @@ void CloseChat(char* _IPaddress)
             fgets(pid1, 10, fp);
             fgets(pid1, 10, fp);
             fgets(pid2, 10, fp);
+            break;
         }
     }
+    fclose(fp);
     
     recvPID = atoi(pid1);
     sendPID = atoi(pid2);
