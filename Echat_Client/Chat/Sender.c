@@ -16,6 +16,7 @@ int main(int argc, char const *argv[])
     struct sockaddr_in sin;
     struct in_addr local_interface;
     char message[MESSAGE_LENGTH - 50], finalMessage[MESSAGE_LENGTH], loop;
+    char Name[50];
     FILE* fp;
     
     if (argc < ARGS_COUNT)
@@ -33,7 +34,7 @@ int main(int argc, char const *argv[])
     }
 
     if ((sock = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
-    {
+    {   
         printf("SOCK FAIL\n");
         exit(0);
     }
@@ -42,15 +43,18 @@ int main(int argc, char const *argv[])
     sin.sin_family = AF_INET;
     sin.sin_addr.s_addr = inet_addr(argv[1]); /*multicast IP*/
     sin.sin_port = htons(atoi(argv[2])); /*port*/
-
+ 
     while (TRUE)
     {
+        printf(BOLD);
         printf("New message: ");
+        printf(NORMAL);
         fgets(message, MESSAGE_LENGTH, stdin);
         sprintf(finalMessage, "%s: %s", argv[3], message);
         sent_bytes = sendto(sock, finalMessage, sizeof(finalMessage), 0, (struct sockaddr*)&sin, sizeof(sin));
         if (sent_bytes < 0)
-        {
+        {   
+            
             printf("SEND FAIL\n");
             exit(0);
         }
