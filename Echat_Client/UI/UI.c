@@ -5,6 +5,7 @@
 #define RED "\x1B[31m"
 #define GREEN "\x1B[32m"
 #define NORMAL "\x1B[0m"
+#define WHITE "\033[0;37m"
 
 static void GetAndCheckUsername(char* _username);
 static void GetAndCheckPassword(char* _password);
@@ -14,6 +15,7 @@ MenuOptions WelcomeMenu()
 {
     int option;
     printf(BOLD);
+    printf(WHITE);
     printf("Welcome to eChat!\n");
     putchar('\n');
     printf("What would like to do?\n1. Register.\n2. Login.\n3. Exit.\n");
@@ -132,6 +134,7 @@ ChatOptions ChatMenu()
 {
     int option;
     printf(BOLD);
+    printf(WHITE);
     printf("What would like to do?\n1. List existing groups.\n2. Create a new group.\n3. Join a group.\n4. Leave a group.\n5. Logout\n");
     putchar('\n');
     printf(NORMAL);
@@ -170,6 +173,7 @@ void GetGroupName(char* _groupName)
     int i=0;
     putchar('\n');
     printf(BOLD);
+    printf(WHITE);
     printf("Please enter a group name. Name must be between %d and %d characters. Use letters and numbers only.\n", MIN_GROUP_NAME_LEN, MAX_GROUP_NAME_LEN);
     printf(NORMAL);
     putchar('\n');
@@ -200,8 +204,10 @@ void ListGroupDetails(char* _groupName, int _numOfParticipants, int _numOfGroups
 {
     putchar('\n');
     printf(BOLD);
+    printf(WHITE);
     printf("Group: %s Number of participants: %d\n", _groupName, _numOfParticipants);
     putchar('\n');
+    printf(NORMAL);
 }
 
 
@@ -210,6 +216,7 @@ static void GetAndCheckUsername(char* _username)
     int i=0;
     putchar('\n');
     printf(BOLD);
+    printf(WHITE);
     printf("Please enter your username:\nUsername must be between %d and %d characters. Use letters and numbers only.\n", MIN_NAME_LEN, MAX_NAME_LEN);
     putchar('\n');
     printf(NORMAL);
@@ -240,6 +247,7 @@ static void GetAndCheckPassword(char* _password)
     int i=0;
     putchar('\n');
     printf(BOLD);
+    printf(WHITE);
     printf("Please enter your password:\nPassword must be between %d and %d characters. Use letters and numbers only\n", MIN_PASSWORD_LEN, MAX_PASSWORD_LEN);
     printf(NORMAL);
     putchar('\n');

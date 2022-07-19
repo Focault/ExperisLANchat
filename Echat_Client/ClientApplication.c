@@ -166,7 +166,7 @@ static ClientResult HandleLogin(Client* _client, Protocol* _protocol)
 {
     int chatOption;
     ClientResult errcode;
-    char leaveIP[10];
+    char leaveIP[10], *groupIP;
     
     chatOption = ChatMenu();
     switch (chatOption)
@@ -177,7 +177,7 @@ static ClientResult HandleLogin(Client* _client, Protocol* _protocol)
             {
                 return errcode;
             }
-            
+
             while (_protocol->m_numOfGroupsLeft)
             {
                 ListGroupDetails(_protocol->m_groupName, _protocol->m_usersInGroup, _protocol->m_numOfGroupsLeft);
@@ -211,8 +211,11 @@ static ClientResult HandleLogin(Client* _client, Protocol* _protocol)
                 ClientRequestStatus(_protocol->m_reply);
                 break;
             }
-            strcpy(leaveIP, GetGroupIP(_client->m_groupsIP, _protocol->m_groupName));
-            CloseChat(leaveIP);
+            if ((groupIP = GetGroupIP(_client->m_groupsIP, _protocol->m_groupName)) != NULL)
+            {
+                strcpy(leaveIP, groupIP);
+                CloseChat(leaveIP);
+            }
             break;
 
         case LOGOUT:
@@ -265,24 +268,26 @@ static void GroupEntrance(Client* _client, Protocol* _protocol, ProtocolType _pr
 static char* GetGroupIP(List* _list, char* _groupName)
 {
     ListItr begin, end, target;
-    void* data;
+    Data *data;
 
     begin = ListItrBegin(_list);
     end = ListItrEnd(_list);
 
     target = ListItrFindFirst(begin, end, FindGoupName, _groupName);
-    if (target != end)
+    if (!ListItrEquals(target, end))
     {
-        data = ListItrGet(target);
-        
+        data = (Data*)ListItrGet(target);
+    } else {
+        return NULL;
     }
-    return ((Data*)data)->m_IP;
+    return data->m_IP;
 }
 
 
 static ClientResult CloseAllChats(Client* _client)
 {
     ListItr begin, end;
+    FILE* fp;
 
     begin = ListItrBegin(_client->m_groupsIP);
     end = ListItrEnd(_client->m_groupsIP);
@@ -291,6 +296,8 @@ static ClientResult CloseAllChats(Client* _client)
     {
         return CLIENT_CLOSE_CHAT_FAILED;
     }
+    fp = fopen(PID_FILE_NAME, "w");
+    fclose(fp);
     return CLIENT_SUCCESS;
 }
 
@@ -304,5 +311,6 @@ static int FindGoupName(void* _element, void* _context)
 static int ActionCloseChat(void* _element, void* _context)
 {
     CloseChat(((Data*)_element)->m_IP);
+    free((Data*)_element);
     return 1;
 }

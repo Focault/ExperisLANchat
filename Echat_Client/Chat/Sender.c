@@ -5,6 +5,11 @@
 #include <netinet/in.h>
 #include "Chat.h"
 #define MESSAGE_LENGTH 1000
+#define BOLD "\x1B[1m"
+#define RED "\x1B[31m"
+#define GREEN "\x1B[32m"
+#define NORMAL "\x1B[0m"
+#define WHITE "\033[0;37m"
 #define TRUE 1
 
 
@@ -41,6 +46,7 @@ int main(int argc, char const *argv[])
     while (TRUE)
     {
         printf(BOLD);
+        printf(WHITE);
         printf("New message: ");
         printf(NORMAL);
         fgets(message, MESSAGE_LENGTH, stdin);
